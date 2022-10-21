@@ -5,7 +5,10 @@
         "removeComments": true,
         "outDir": "dist",
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "typeRoots": [
+            "./src/types"
+        ]
     },
     "exclude": [
         "node_modules"
