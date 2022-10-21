@@ -33,20 +33,21 @@ export class User {
     @Column()
     fullname: string;
 
-    @Column()
+    @Column({ nullable: true })
     birthday: Date;
 
     @Column({
         type: 'enum',
         enum: Gender,
-        default: Gender.MALE
+        default: Gender.MALE,
+        nullable: false
     })
     gender: Gender;
 
-    @Column()
+    @Column({ nullable: true })
     address: string;
 
-    @Column()
+    @Column({ nullable: true })
     numberPhone: number;
 
     @Column({
