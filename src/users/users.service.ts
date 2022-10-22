@@ -47,6 +47,19 @@ export async function updateUser(id: number, dataUpdate: any) {
 
     dataUpdate.id = id;
 
-    const result = await userRepo.update(id, dataUpdate);
+    await userRepo.update(id, dataUpdate);
     return { success: true, information: dataUpdate };
+}
+
+export async function deleteUser(id: number) {
+    const user = await userRepo.findOneBy({
+        id: id
+    });
+
+    if (!user) {
+        throw new BadRequest('User not found');
+    }
+
+    await userRepo.softDelete(id);
+    return { success: true };
 }
