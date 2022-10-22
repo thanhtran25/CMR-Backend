@@ -7,7 +7,7 @@ import * as path from 'path';
 
 export const AppDataSource = new DataSource({
     charset: 'utf8mb4_general_ci',
-    type: "mysql",
+    type: "mariadb",
     host: process.env.DB_HOST,
     port: 3306,
     username: process.env.DB_USER,

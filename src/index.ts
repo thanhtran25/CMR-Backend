@@ -1,5 +1,6 @@
 import "reflect-metadata"
 import * as dotenv from "dotenv";
+import * as cors from "cors";
 dotenv.config();
 
 import * as express from "express";
@@ -13,19 +14,7 @@ async function bootstrap() {
     const port: number = parseInt(process.env.SERVER_PORT || '3004', 10);
     const app = express();
 
-    app.use(function (req: express.Request, res: express.Response, next: express.NextFunction) {
-        // Website you wish to allow to connect
-        res.setHeader('Access-Control-Allow-Origin', process.env.REACT_URL);
-        // Request methods you wish to allow
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        // Request headers you wish to allow
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        // Set to true if you need the website to include cookies in the requests sent
-        // to the API (e.g. in case you use sessions)
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-        // Pass to next layer of middleware
-        next();
-    });
+    app.use(cors());
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
