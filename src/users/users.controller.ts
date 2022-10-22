@@ -46,3 +46,13 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
         return next(error);
     }
 }
+
+export async function deleteUser(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await userService.deleteUser(parseInt(req.params.id))
+        return res.status(200).send(result);
+
+    } catch (error) {
+        return next(error);
+    }
+}
