@@ -17,6 +17,7 @@ export const AppDataSource = new DataSource({
         path.join(__dirname, "../**/*.entity{.js,.ts}")
     ],
     migrations: [path.join(__dirname, "../migrations/*{.js,.ts}")],
-    namingStrategy: new SnakeNamingStrategy()
+    namingStrategy: new SnakeNamingStrategy(),
+    logging: true
 });
 

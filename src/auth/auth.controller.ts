@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import { Gender, Roles } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
-import * as userService from './auth.service'
+import * as authService from './auth.service'
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
@@ -12,13 +12,13 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
             fullname: Joi.string().max(255).required(),
             birthday: Joi.date(),
             gender: Joi.string().default(Gender.MALE),
-            address: Joi.string().max(255),
+            address: Joi.string().max(255).default(null),
             numberPhone: Joi.string().min(10).max(11),
             role: Joi.string().default(Roles.CUSTOMER),
         });
 
         const value = validate(req.body, schema);
-        const result = await userService.signup(value)
+        const result = await authService.signup(value)
         return res.status(201).send(result);
 
     } catch (error) {
@@ -35,7 +35,7 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
 
         const { email, password } = validate(req.body, schema);
 
-        const result = await userService.signin(email, password);
+        const result = await authService.signin(email, password);
         return res.status(200).send(result);
 
     } catch (error) {

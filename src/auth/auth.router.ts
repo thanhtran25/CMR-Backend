@@ -3,7 +3,6 @@ import {
     signup,
     signin
 } from './auth.controller';
-import { authorization } from '../core/middleware/auth.middleware'
 
 const router = express.Router();
 

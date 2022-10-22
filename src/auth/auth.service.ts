@@ -17,7 +17,9 @@ export async function signup(user: any) {
     const hashPassword = await bcrypt.hash(user.password, ROUNDS_NUMBER);
     delete user.password;
     user.hashedPassword = hashPassword;
-    user.numberPhone = parseInt(user.numberPhone, 10);
+    if (user.numberPhone) {
+        user.numberPhone = parseInt(user.numberPhone, 10);
+    }
     await userRepo.save(user);
     return { success: true };
 }
