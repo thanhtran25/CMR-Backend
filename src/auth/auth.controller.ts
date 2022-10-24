@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Gender, Roles } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as authService from './auth.service'
+import { LoginDTO, SignupDTO } from './auth.dto';
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
@@ -17,9 +18,9 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
             role: Joi.string().default(Roles.CUSTOMER),
         });
 
-        const value = validate(req.body, schema);
-        const result = await authService.signup(value)
-        return res.status(201).send(result);
+        const value = validate<SignupDTO>(req.body, schema);
+        await authService.signup(value)
+        return res.status(201).send();
 
     } catch (error) {
         return next(error);
@@ -33,7 +34,7 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
             password: Joi.string().min(8).required()
         });
 
-        const { email, password } = validate(req.body, schema);
+        const { email, password } = validate<LoginDTO>(req.body, schema);
 
         const result = await authService.signin(email, password);
         return res.status(200).send(result);

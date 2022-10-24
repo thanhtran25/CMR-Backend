@@ -1,54 +1,82 @@
 import { BadRequest, Unauthorized } from 'http-errors';
-import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { AppDataSource } from '../core/database';
 import { User } from '../users/users.entity';
 import { ROUNDS_NUMBER } from '../core/constant'
+import { ChangePassword, CreateUserDTO, FilterUser, UpdateUserDTO } from './users.dto';
+import { Like } from 'typeorm';
+import { object } from 'joi';
 
 const userRepo = AppDataSource.getRepository(User);
 
-export async function createUser(user: any) {
-    const duplicatedUser = await userRepo.findOneBy({
-        email: user.email
-    });
-    if (duplicatedUser) {
-        throw new BadRequest('Email already is invalid');
-    }
-    const hashPassword = await bcrypt.hash(user.password, ROUNDS_NUMBER);
-    delete user.password;
-    user.hashedPassword = hashPassword;
-    if (user.numberPhone) {
-        user.numberPhone = parseInt(user.numberPhone, 10);
-    }
+export async function getUsers(pageNumber: number, pageSize: number, filter: FilterUser) {
+    const offset = pageSize * (pageNumber - 1);
+    const limit = pageSize;
+    let where: {
+        fullname?: any;
+        address?: any;
+        gender?: any;
+    } = {};
 
-    await userRepo.save(user);
-    const { createdAt, updatedAt, deletedAt, hashedPassword, ...newUser } = user;
-    return { success: true, information: newUser };
+    if (filter.name) {
+        where.fullname = Like(`%${filter.name}%`)
+    }
+    if (filter.address) {
+        where.address = Like(`%${filter.address}%`)
+    }
+    if (filter.gender) {
+        where.gender = filter.gender
+    }
+    const users = await userRepo.find({
+        skip: offset,
+        take: limit,
+        where: where
+    });
+
+    return users;
 }
 
-export async function updateUser(id: number, dataUpdate: any) {
+export async function getUser(id: number) {
     const user = await userRepo.findOneBy({
+        id: id
+    });
+    if (!user) {
+        throw new BadRequest('User not found');
+    }
+    return user;
+}
+
+export async function createUser(createUserDTO: CreateUserDTO) {
+    const duplicatedUser = await userRepo.findOneBy({
+        email: createUserDTO.email
+    });
+    if (duplicatedUser) {
+        throw new BadRequest('Email already existed');
+    }
+    const newUser = new User(createUserDTO);
+    newUser.hashedPassword = await bcrypt.hash(createUserDTO.password, ROUNDS_NUMBER);
+
+    await userRepo.save(newUser);
+    delete newUser.hashedPassword;
+    return newUser;
+}
+
+export async function updateUser(id: number, updateUserDTO: UpdateUserDTO) {
+    let user = await userRepo.findOneBy({
         id: id
     });
 
     if (!user) {
         throw new BadRequest('User not found');
     }
-
-    if (dataUpdate.password) {
-        const hashPassword = await bcrypt.hash(dataUpdate.password, ROUNDS_NUMBER);
-        dataUpdate.hashedPassword = hashPassword;
-        delete dataUpdate.password;
+    user = {
+        ...user,
+        ...updateUser,
     }
+    await userRepo.update(id, user);
 
-    if (dataUpdate.numberPhone) {
-        dataUpdate.numberPhone = parseInt(dataUpdate.numberPhone, 10);
-    }
-
-    dataUpdate.id = id;
-
-    await userRepo.update(id, dataUpdate);
-    return { success: true, information: dataUpdate };
+    delete user.hashedPassword;
+    return user;
 }
 
 export async function deleteUser(id: number) {
@@ -61,5 +89,23 @@ export async function deleteUser(id: number) {
     }
 
     await userRepo.softDelete(id);
-    return { success: true };
+}
+
+export async function changePassword(changePassword: ChangePassword, email: string) {
+    const user = await userRepo.findOne({
+        where: {
+            email: email
+        },
+        select: ['hashedPassword', 'id']
+    });
+
+    const isValid = await bcrypt.compare(changePassword.currentPassword, user.hashedPassword);
+
+    console.log('Hello');
+    if (!isValid) {
+        throw new Unauthorized('Current password is incorrect');
+    }
+    user.hashedPassword = await bcrypt.hash(changePassword.newPassword, ROUNDS_NUMBER);
+
+    await userRepo.update(user.id, user);
 }
