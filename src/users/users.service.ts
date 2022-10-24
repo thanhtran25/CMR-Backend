@@ -3,9 +3,8 @@ import * as bcrypt from 'bcrypt';
 import { AppDataSource } from '../core/database';
 import { User } from '../users/users.entity';
 import { ROUNDS_NUMBER } from '../core/constant'
-import { ChangePassword, CreateUserDTO, FilterUser, UpdateUserDTO } from './users.dto';
+import { ChangePosition, ChangePassword, CreateUserDTO, FilterUser, UpdateUserDTO } from './users.dto';
 import { Like } from 'typeorm';
-import { object } from 'joi';
 
 const userRepo = AppDataSource.getRepository(User);
 
@@ -101,11 +100,26 @@ export async function changePassword(changePassword: ChangePassword, email: stri
 
     const isValid = await bcrypt.compare(changePassword.currentPassword, user.hashedPassword);
 
-    console.log('Hello');
     if (!isValid) {
         throw new Unauthorized('Current password is incorrect');
     }
     user.hashedPassword = await bcrypt.hash(changePassword.newPassword, ROUNDS_NUMBER);
+
+    await userRepo.update(user.id, user);
+}
+
+export async function changePosition(changePosition: ChangePosition) {
+    const user = await userRepo.findOne({
+        where: {
+            id: changePosition.id
+        }
+    });
+
+    if (!user) {
+        throw new BadRequest('User not found');
+    }
+
+    user.role = changePosition.role;
 
     await userRepo.update(user.id, user);
 }

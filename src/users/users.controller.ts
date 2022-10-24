@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Gender, Roles } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as userService from './users.service';
-import { ChangePassword, CreateUserDTO, FilterUser, UpdateUserDTO } from './users.dto';
+import { ChangePassword, ChangePosition, CreateUserDTO, FilterUser, UpdateUserDTO } from './users.dto';
 import { PAGINATION } from '../core/constant';
 
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
@@ -97,6 +97,21 @@ export async function changePassword(req: Request, res: Response, next: NextFunc
 
         const value = validate<ChangePassword>(req.body, schema);
         await userService.changePassword(value, req.user.email);
+        return res.status(200).send();
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function changePosition(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            id: Joi.number(),
+            role: Joi.string().required()
+        });
+        const value = validate<ChangePosition>({ id: req.user.id, ...req.body }, schema);
+
+        await userService.changePosition(value);
         return res.status(200).send();
     } catch (error) {
         return next(error);

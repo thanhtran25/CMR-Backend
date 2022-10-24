@@ -31,3 +31,8 @@ export class FilterUser {
     gender: Gender;
     address: string;
 }
+
+export class ChangePosition {
+    id: number
+    role: Roles;
+}
