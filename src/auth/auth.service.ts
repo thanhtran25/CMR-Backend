@@ -4,30 +4,34 @@ import * as bcrypt from 'bcrypt';
 import { AppDataSource } from '../core/database';
 import { User } from '../users/users.entity';
 import { ROUNDS_NUMBER } from '../core/constant'
+import { SignupDTO } from './auth.dto';
 
 const userRepo = AppDataSource.getRepository(User);
 
-export async function signup(user: any) {
+export async function signup(signupDTO: SignupDTO) {
     const duplicatedUser = await userRepo.findOneBy({
-        email: user.email
+        email: signupDTO.email
     });
     if (duplicatedUser) {
-        throw new BadRequest('Email already is invalid');
+        throw new BadRequest('Email already existed');
     }
-    const hashPassword = await bcrypt.hash(user.password, ROUNDS_NUMBER);
-    delete user.password;
-    user.hashedPassword = hashPassword;
-    if (user.numberPhone) {
-        user.numberPhone = parseInt(user.numberPhone, 10);
-    }
-    await userRepo.save(user);
-    return { success: true };
+    const newUser = new User(signupDTO);
+
+    newUser.hashedPassword = await bcrypt.hash(signupDTO.password, ROUNDS_NUMBER);
+    await userRepo.save(newUser);
+    delete newUser.hashedPassword;
+    return newUser;
 }
 
 export async function signin(email: string, password: string) {
-    const user = await userRepo.findOneBy({
-        email: email
+    const user = await userRepo.findOne({
+        where: {
+            email: email
+        },
+        select: ['address', 'birthday', 'createdAt', 'deletedAt', 'updatedAt', 'email', 'fullname', 'gender', 'hashedPassword', 'id', 'numberPhone', 'role']
     });
+
+    console.log(user);
 
     if (!user) {
         throw new Unauthorized('Email or password is incorrect');
@@ -41,7 +45,7 @@ export async function signin(email: string, password: string) {
     const payload = { id: user.id, email: user.email, role: user.role }
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRATION });
 
-    const { createdAt, updatedAt, hashedPassword, ...newUser } = user;
+    const { hashedPassword, ...newUser } = user;
 
-    return { success: true, information: newUser, accessToken };
+    return { information: newUser, accessToken };
 }

@@ -15,9 +15,6 @@ export function authorization(...roles: string[]) {
 
             const user = jwt.verify(accessToken, process.env.JWT_SECRET_KEY, { ignoreExpiration: false }) as ReqUser;
 
-            console.log(user.role);
-
-
             if (roles.length && !roles.some((role) => role === user.role)) {
                 throw new Forbidden('Forbidden accessible');
             }

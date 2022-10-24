@@ -19,6 +19,11 @@ import { PurchaseOrder } from '../purchase_orders/purchase_orders.entity';
 
 @Entity('users')
 export class User {
+    constructor(data: Partial<User>) {
+        Object.assign(this, data)
+    }
+
+
     @PrimaryGeneratedColumn({
         type: 'bigint'
     })
@@ -27,13 +32,13 @@ export class User {
     @Column()
     email: string;
 
-    @Column()
+    @Column({ select: false })
     hashedPassword: string;
 
     @Column()
     fullname: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'date' })
     birthday: Date;
 
     @Column({
@@ -48,7 +53,7 @@ export class User {
     address: string;
 
     @Column({ nullable: true })
-    numberPhone: number;
+    numberPhone: string;
 
     @Column({
         type: 'enum',
