@@ -20,6 +20,6 @@ router.put('/me/password', authorization(), changePassword);
 router.get('/:id', getUser);
 router.put('/:id', updateUser);
 router.delete('/:id', deleteUser);
-router.put('/position/:id', authorization(Roles.ADMIN), changePosition);
+router.put('/position/:id', changePosition);
 
 export default router;

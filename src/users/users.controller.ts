@@ -108,7 +108,7 @@ export async function changePosition(req: Request, res: Response, next: NextFunc
             id: Joi.number(),
             role: Joi.string().required()
         });
-        const value = validate<ChangePosition>({ id: req.user.id, ...req.body }, schema);
+        const value = validate<ChangePosition>({ id: req.params.id, ...req.body }, schema);
 
         await userService.changePosition(value);
         return res.status(200).send();
