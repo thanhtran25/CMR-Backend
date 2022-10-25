@@ -12,6 +12,10 @@ import { Product } from '../products/products.entity';
 
 @Entity('categories')
 export class Category {
+    constructor(data: Partial<Category>) {
+        Object.assign(this, data)
+    }
+
     @PrimaryGeneratedColumn({
         type: 'bigint'
     })

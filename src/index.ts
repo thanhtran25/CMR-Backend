@@ -8,6 +8,7 @@ import * as morgan from 'morgan'
 import { AppDataSource } from "./core/database";
 import authRouter from "./auth/auth.router";
 import userRouter from './users/users.router'
+import categoryRouter from './categories/categories.router'
 import * as resUtil from './core/utils/res.util';
 
 async function bootstrap() {
@@ -25,6 +26,7 @@ async function bootstrap() {
 
     app.use('/auth', authRouter);
     app.use('/users', userRouter);
+    app.use('/categories', categoryRouter);
 
     app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
         return resUtil.handleError(res, error);

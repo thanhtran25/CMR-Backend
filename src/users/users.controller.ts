@@ -12,7 +12,6 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
         const pageSize = +req.query.limit || PAGINATION.DEFAULT_PAGE_SIZE;
 
         let filter = new FilterUser();
-        console.log(req.query.name);
 
         filter.name = req.query.name as string;
         filter.address = req.query.address as string;
