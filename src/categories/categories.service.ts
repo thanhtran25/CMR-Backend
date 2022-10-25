@@ -1,5 +1,4 @@
-import { BadRequest, Unauthorized } from 'http-errors';
-import * as bcrypt from 'bcrypt';
+import { BadRequest } from 'http-errors';
 import { AppDataSource } from '../core/database';
 import { CreateCategoryDTO, FilterCategory, UpdateCategoryDTO } from './categories.dto';
 import { Like } from 'typeorm';
@@ -59,7 +58,7 @@ export async function updateCategory(id: number, updateCategoryDTO: UpdateCatego
     }
     category = {
         ...category,
-        ...updateCategory,
+        ...updateCategoryDTO,
     }
     await categoryRepo.update(id, category);
     return category;
