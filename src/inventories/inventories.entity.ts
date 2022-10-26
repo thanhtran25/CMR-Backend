@@ -38,7 +38,9 @@ export class Inventory {
     })
     updatedAt: Date;
 
-    @OneToOne(() => Product, (product) => product.inventory)
+    @OneToOne(() => Product, (product) => product.inventory, { nullable: false })
     @JoinColumn()
     product: Relation<Product>;
+    @Column()
+    productId: number
 } 
