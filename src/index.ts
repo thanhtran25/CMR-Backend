@@ -1,16 +1,19 @@
 import "reflect-metadata"
+import * as fs from "fs/promises";
+import * as path from "path";
 import * as dotenv from "dotenv";
 import * as cors from "cors";
 dotenv.config();
 
 import * as express from "express";
-import * as morgan from 'morgan'
+import * as morgan from 'morgan';
 import { AppDataSource } from "./core/database";
 import authRouter from "./auth/auth.router";
 import userRouter from './users/users.router';
 import categoryRouter from './categories/categories.router';
 import brandRouter from './brands/brands.router';
-import inventoryRouter from './inventories/inventories.router;'
+import inventoryRouter from './inventories/inventories.router';
+import productRouter from './products/products.router';
 import * as resUtil from './core/utils/res.util';
 
 async function bootstrap() {
@@ -21,7 +24,8 @@ async function bootstrap() {
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    app.use(morgan('tiny'))
+    app.use('/static', express.static(path.join(__dirname, '..', 'public')));
+    app.use(morgan('tiny'));
 
     await AppDataSource.initialize();
     console.log('Connection has been established successfully.');
@@ -31,8 +35,17 @@ async function bootstrap() {
     app.use('/categories', categoryRouter);
     app.use('/brands', brandRouter);
     app.use('/inventories', inventoryRouter);
+    app.use('/products', productRouter);
 
     app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+        if (req.file) {
+            fs.unlink(req.file.path).catch(error => console.log(error))
+        } else if (req.files && Array.isArray(req.files)) {
+            for (const file of req.files) {
+                fs.unlink(file.path).catch(error => console.log(error))
+            }
+        }
+
         return resUtil.handleError(res, error);
     });
 

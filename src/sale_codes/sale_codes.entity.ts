@@ -12,7 +12,7 @@ import { Product } from '../products/products.entity';
 @Entity('sale_codes')
 export class SaleCode {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     name: string;

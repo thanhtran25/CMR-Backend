@@ -1,7 +1,7 @@
 import { BadRequest } from 'http-errors';
 import path = require('path');
 
-function validate<T>(object: any, schema: any): T {
+function validate<T>(object: any, schema: any): T | any {
     const { error, value } = schema.validate(object, { abortEarly: false });
     if (error) {
         const errorDetails = error.details.map((detail: any) => {

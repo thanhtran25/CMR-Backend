@@ -22,6 +22,10 @@ import { SaleCode } from '../sale_codes/sale_codes.entity';
 
 @Entity('products')
 export class Product {
+    constructor(data: Partial<Product>) {
+        Object.assign(this, data)
+    }
+
     @PrimaryGeneratedColumn({
         type: 'bigint'
     })
@@ -56,14 +60,20 @@ export class Product {
     @ManyToOne(() => Brand, (brand) => brand.products, { nullable: false })
     @JoinColumn({ name: 'brand_id' })
     brand: Relation<Brand>;
+    @Column()
+    brandId: number;
 
     @ManyToOne(() => Category, (category) => category.products, { nullable: false })
     @JoinColumn({ name: 'category_id' })
     category: Relation<Category>;
+    @Column()
+    categoryId: number;
 
     @ManyToOne(() => SaleCode, (saleCode) => saleCode.products)
     @JoinColumn({ name: 'sale_code_id' })
     saleCode: Relation<SaleCode>;
+    @Column()
+    saleCodeId: number;
 
     @OneToOne(() => Inventory, (inventory) => inventory.product, { nullable: false })
     inventory: Relation<Inventory>;

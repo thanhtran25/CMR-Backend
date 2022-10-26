@@ -16,13 +16,13 @@ export async function getBrands(pageNumber: number, pageSize: number, filter: Fi
     if (filter.name) {
         where.name = Like(`%${filter.name}%`)
     }
-    const categories = await branchRepo.find({
+    const brands = await branchRepo.find({
         skip: offset,
         take: limit,
         where: where
     });
 
-    return categories;
+    return brands;
 }
 
 export async function getBranch(id: number) {

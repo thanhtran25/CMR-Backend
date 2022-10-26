@@ -1,7 +1,6 @@
 import { BadRequest } from 'http-errors';
 import { AppDataSource } from '../core/database';
 import { CreateInventoryDTO, UpdateInventoryDTO } from './inventories.dto';
-import { Like } from 'typeorm';
 import { Inventory } from './inventories.entity';
 
 const inventoryRepo = AppDataSource.getRepository(Inventory);
@@ -10,12 +9,12 @@ export async function getInventories(pageNumber: number, pageSize: number) {
     const offset = pageSize * (pageNumber - 1);
     const limit = pageSize;
 
-    const categories = await inventoryRepo.find({
+    const inventories = await inventoryRepo.find({
         skip: offset,
         take: limit,
     });
 
-    return categories;
+    return inventories;
 }
 
 export async function getInventory(id: number) {

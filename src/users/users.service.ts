@@ -70,7 +70,7 @@ export async function updateUser(id: number, updateUserDTO: UpdateUserDTO) {
     }
     user = {
         ...user,
-        ...updateUser,
+        ...updateUserDTO,
     }
     await userRepo.update(id, user);
 
