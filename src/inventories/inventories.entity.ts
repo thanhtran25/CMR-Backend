@@ -6,12 +6,17 @@ import {
     UpdateDateColumn,
     OneToOne,
     Relation,
+    JoinColumn,
 
 } from 'typeorm';
 import { Product } from '../products/products.entity';
 
 @Entity('inventories')
 export class Inventory {
+    constructor(data: Partial<Inventory>) {
+        Object.assign(this, data)
+    }
+
     @PrimaryGeneratedColumn({
         type: 'bigint'
     })
@@ -34,5 +39,6 @@ export class Inventory {
     updatedAt: Date;
 
     @OneToOne(() => Product, (product) => product.inventory)
+    @JoinColumn()
     product: Relation<Product>;
 } 

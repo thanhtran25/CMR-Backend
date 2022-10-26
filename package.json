@@ -12,6 +12,7 @@
     "migration:revert": "npm run typeorm -- migration:revert",
     "migration:show": "npm run typeorm -- migration:show",
     "migration:generate": "npm run typeorm -- migration:generate -p",
+    "migration:create": "typeorm-ts-node-commonjs migration:create",
     "schema:drop": "npm run typeorm -- schema:drop"
   },
   "repository": {

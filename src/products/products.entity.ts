@@ -61,14 +61,11 @@ export class Product {
     @JoinColumn({ name: 'category_id' })
     category: Relation<Category>;
 
-    @ManyToOne(() => SaleCode, (saleCode) => saleCode.products, { nullable: false })
+    @ManyToOne(() => SaleCode, (saleCode) => saleCode.products)
     @JoinColumn({ name: 'sale_code_id' })
     saleCode: Relation<SaleCode>;
 
     @OneToOne(() => Inventory, (inventory) => inventory.product, { nullable: false })
-    @JoinColumn({
-        name: 'inventory_id'
-    })
     inventory: Relation<Inventory>;
 
     @OneToMany(() => BillDetail, (billDetail) => billDetail.product)
