@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import { validate } from '../core/utils/validate.util';
 import * as branchService from './brands.service';
-import { CreateBranchDTO, FilterBranch, UpdateBranchDTO } from './brands.dto';
+import { CreateBranchDTO, FilterBranchDTO, UpdateBranchDTO } from './brands.dto';
 import { PAGINATION } from '../core/constant';
 
 export async function getBrands(req: Request, res: Response, next: NextFunction) {
@@ -10,7 +10,7 @@ export async function getBrands(req: Request, res: Response, next: NextFunction)
         const pageNumber = +req.query.page || PAGINATION.DEFAULT_PAGE_NUMBER;
         const pageSize = +req.query.limit || PAGINATION.DEFAULT_PAGE_SIZE;
 
-        let filter = new FilterBranch();
+        let filter = new FilterBranchDTO();
 
         filter.name = req.query.name as string;
 

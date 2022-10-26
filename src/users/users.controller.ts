@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Gender, Roles } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as userService from './users.service';
-import { ChangePassword, ChangePosition, CreateUserDTO, FilterUser, UpdateUserDTO } from './users.dto';
+import { ChangePasswordDTO, ChangePositionDTO, CreateUserDTO, FilterUserDTO, UpdateUserDTO } from './users.dto';
 import { PAGINATION } from '../core/constant';
 
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
@@ -11,7 +11,7 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
         const pageNumber = +req.query.page || PAGINATION.DEFAULT_PAGE_NUMBER;
         const pageSize = +req.query.limit || PAGINATION.DEFAULT_PAGE_SIZE;
 
-        let filter = new FilterUser();
+        let filter = new FilterUserDTO();
 
         filter.name = req.query.name as string;
         filter.address = req.query.address as string;
@@ -94,7 +94,7 @@ export async function changePassword(req: Request, res: Response, next: NextFunc
             newPassword: Joi.string().min(8).required()
         });
 
-        const value = validate<ChangePassword>(req.body, schema);
+        const value = validate<ChangePasswordDTO>(req.body, schema);
         await userService.changePassword(value, req.user.email);
         return res.status(200).send();
     } catch (error) {
@@ -108,7 +108,7 @@ export async function changePosition(req: Request, res: Response, next: NextFunc
             id: Joi.number(),
             role: Joi.string().required()
         });
-        const value = validate<ChangePosition>({ id: req.params.id, ...req.body }, schema);
+        const value = validate<ChangePositionDTO>({ id: req.params.id, ...req.body }, schema);
 
         await userService.changePosition(value);
         return res.status(200).send();

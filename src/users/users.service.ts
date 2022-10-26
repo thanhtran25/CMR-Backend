@@ -3,12 +3,12 @@ import * as bcrypt from 'bcrypt';
 import { AppDataSource } from '../core/database';
 import { User } from '../users/users.entity';
 import { ROUNDS_NUMBER } from '../core/constant'
-import { ChangePosition, ChangePassword, CreateUserDTO, FilterUser, UpdateUserDTO } from './users.dto';
+import { ChangePositionDTO, ChangePasswordDTO, CreateUserDTO, FilterUserDTO, UpdateUserDTO } from './users.dto';
 import { Like } from 'typeorm';
 
 const userRepo = AppDataSource.getRepository(User);
 
-export async function getUsers(pageNumber: number, pageSize: number, filter: FilterUser) {
+export async function getUsers(pageNumber: number, pageSize: number, filter: FilterUserDTO) {
     const offset = pageSize * (pageNumber - 1);
     const limit = pageSize;
     let where: {
@@ -90,7 +90,7 @@ export async function deleteUser(id: number) {
     await userRepo.softDelete(id);
 }
 
-export async function changePassword(changePassword: ChangePassword, email: string) {
+export async function changePassword(changePassword: ChangePasswordDTO, email: string) {
     const user = await userRepo.findOne({
         where: {
             email: email
@@ -108,7 +108,7 @@ export async function changePassword(changePassword: ChangePassword, email: stri
     await userRepo.update(user.id, user);
 }
 
-export async function changePosition(changePosition: ChangePosition) {
+export async function changePosition(changePosition: ChangePositionDTO) {
     const user = await userRepo.findOne({
         where: {
             id: changePosition.id

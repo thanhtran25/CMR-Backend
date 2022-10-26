@@ -21,18 +21,18 @@ export class UpdateUserDTO {
     numberPhone: string;
 }
 
-export class ChangePassword {
+export class ChangePasswordDTO {
     currentPassword: string;
     newPassword: string;
 }
 
-export class FilterUser {
+export class FilterUserDTO {
     name: string;
     gender: Gender;
     address: string;
 }
 
-export class ChangePosition {
+export class ChangePositionDTO {
     id: number
     role: Roles;
 }

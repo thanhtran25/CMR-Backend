@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Gender, Roles } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as authService from './auth.service'
-import { LoginDTO, SignupDTO } from './auth.dto';
+import { ForgotPasswordDTO, LoginDTO, ResetPasswordDTO, SignupDTO } from './auth.dto';
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
@@ -38,6 +38,40 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
 
         const result = await authService.signin(email, password);
         return res.status(200).send(result);
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            email: Joi.string().email().required(),
+        });
+
+        const value = validate<ForgotPasswordDTO>(req.body, schema);
+
+        await authService.forgotPassword(value);
+        return res.status(200).send();
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            id: Joi.number().required(),
+            password: Joi.string().required(),
+            token: Joi.string().required(),
+        });
+
+        const value = validate<ResetPasswordDTO>(req.body, schema);
+
+        await authService.resetPassword(value);
+        return res.status(200).send();
 
     } catch (error) {
         return next(error);

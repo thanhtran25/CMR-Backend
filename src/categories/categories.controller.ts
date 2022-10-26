@@ -1,9 +1,8 @@
 import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
-import { Gender, Roles } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as categoryService from './categories.service';
-import { CreateCategoryDTO, FilterCategory, UpdateCategoryDTO } from './categories.dto';
+import { CreateCategoryDTO, FilterCategoryDTO, UpdateCategoryDTO } from './categories.dto';
 import { PAGINATION } from '../core/constant';
 
 export async function getCategories(req: Request, res: Response, next: NextFunction) {
@@ -11,7 +10,7 @@ export async function getCategories(req: Request, res: Response, next: NextFunct
         const pageNumber = +req.query.page || PAGINATION.DEFAULT_PAGE_NUMBER;
         const pageSize = +req.query.limit || PAGINATION.DEFAULT_PAGE_SIZE;
 
-        let filter = new FilterCategory();
+        let filter = new FilterCategoryDTO();
 
         filter.name = req.query.name as string;
 

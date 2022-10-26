@@ -1,4 +1,4 @@
-export class FilterCategory {
+export class FilterCategoryDTO {
     name: string
 }
 
