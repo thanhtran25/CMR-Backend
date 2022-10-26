@@ -15,3 +15,13 @@ export class LoginDTO {
     email: string;
     password: string;
 }
+
+export class ForgotPasswordDTO {
+    email: string;
+}
+
+export class ResetPasswordDTO {
+    id: number;
+    password: string;
+    token: string;
+}

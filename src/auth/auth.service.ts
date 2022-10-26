@@ -3,10 +3,15 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { AppDataSource } from '../core/database';
 import { User } from '../users/users.entity';
+import { Token } from './token.entity';
 import { ROUNDS_NUMBER } from '../core/constant'
-import { SignupDTO } from './auth.dto';
+import { ForgotPasswordDTO, ResetPasswordDTO, SignupDTO } from './auth.dto';
+import { MoreThan } from 'typeorm';
+import { randomBytes } from 'crypto';
+import { sendEmail } from '../core/utils/send-email.util';
 
 const userRepo = AppDataSource.getRepository(User);
+const tokenRepo = AppDataSource.getRepository(Token);
 
 export async function signup(signupDTO: SignupDTO) {
     const duplicatedUser = await userRepo.findOneBy({
@@ -31,8 +36,6 @@ export async function signin(email: string, password: string) {
         select: ['address', 'birthday', 'createdAt', 'deletedAt', 'updatedAt', 'email', 'fullname', 'gender', 'hashedPassword', 'id', 'numberPhone', 'role']
     });
 
-    console.log(user);
-
     if (!user) {
         throw new Unauthorized('Email or password is incorrect');
     }
@@ -48,4 +51,70 @@ export async function signin(email: string, password: string) {
     const { hashedPassword, ...newUser } = user;
 
     return { information: newUser, accessToken };
+}
+
+export async function forgotPassword(forgotPasswordDTO: ForgotPasswordDTO) {
+    const user = await userRepo.findOne({
+        where: {
+            email: forgotPasswordDTO.email
+        },
+        select: ['id', 'email']
+    });
+
+    if (!user) {
+        throw new Unauthorized('User with given email does not exist');
+    }
+
+    let token = await tokenRepo.findOne({
+        where: {
+            user: user,
+            expiredAt: MoreThan(new Date())
+        }
+    })
+
+    if (!token) {
+        token = new Token({
+            user: user,
+            token: randomBytes(32).toString("hex"),
+            expiredAt: new Date(Date.now() + +process.env.EXPIRED_RESET_PASSWORD_TOKEN)
+        });
+        await tokenRepo.save(token);
+    }
+    const resetPasswordLink = `${process.env.WEB_FORGOT_PASSWORD_URL}/${user.id}/${token.token}`;
+
+    sendEmail({
+        email: user.email,
+        subject: "Goldduck Camera - Password reset",
+        template: 'reset-password',
+        context: { resetPasswordLink }
+    }).catch(error => console.log(error));
+}
+
+export async function resetPassword(resetPasswordDTO: ResetPasswordDTO) {
+    const user = await userRepo.findOne({
+        where: {
+            id: resetPasswordDTO.id
+        },
+        select: ['id', 'email', 'hashedPassword', 'role'],
+    });
+
+    if (!user) {
+        throw new Unauthorized('Invalid link or expired');
+    }
+
+    let token = await tokenRepo.findOne({
+        where: {
+            user: user,
+            token: resetPasswordDTO.token,
+            expiredAt: MoreThan(new Date())
+        }
+    })
+
+    if (!token) {
+        throw new Unauthorized('Invalid link or expired');
+    }
+
+    user.hashedPassword = await bcrypt.hash(resetPasswordDTO.password, ROUNDS_NUMBER);
+    await userRepo.save(user);
+    await tokenRepo.delete(token.id);
 }

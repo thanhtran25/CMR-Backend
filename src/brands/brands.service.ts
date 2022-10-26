@@ -1,12 +1,12 @@
 import { BadRequest } from 'http-errors';
 import { AppDataSource } from '../core/database';
-import { CreateBranchDTO, FilterBranch, UpdateBranchDTO } from './brands.dto';
+import { CreateBranchDTO, FilterBranchDTO, UpdateBranchDTO } from './brands.dto';
 import { Like } from 'typeorm';
 import { Brand } from './brands.entity';
 
 const branchRepo = AppDataSource.getRepository(Brand);
 
-export async function getBrands(pageNumber: number, pageSize: number, filter: FilterBranch) {
+export async function getBrands(pageNumber: number, pageSize: number, filter: FilterBranchDTO) {
     const offset = pageSize * (pageNumber - 1);
     const limit = pageSize;
     let where: {

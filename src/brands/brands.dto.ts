@@ -1,4 +1,4 @@
-export class FilterBranch {
+export class FilterBranchDTO {
     name: string
 }
 

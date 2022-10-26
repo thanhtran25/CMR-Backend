@@ -8,6 +8,7 @@ import {
     OneToMany,
     Relation,
 } from 'typeorm';
+import { Token } from '../auth/token.entity';
 import { Bill } from '../bills/bills.entity';
 
 import {
@@ -79,4 +80,7 @@ export class User {
 
     @OneToMany(() => Insurance, (insurance) => insurance.user)
     insurances: Relation<Insurance>[];
+
+    @OneToMany(() => Token, (token) => token.user)
+    tokens: Relation<Token>[];
 }

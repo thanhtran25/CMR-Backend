@@ -1,12 +1,12 @@
 import { BadRequest } from 'http-errors';
 import { AppDataSource } from '../core/database';
-import { CreateCategoryDTO, FilterCategory, UpdateCategoryDTO } from './categories.dto';
+import { CreateCategoryDTO, FilterCategoryDTO, UpdateCategoryDTO } from './categories.dto';
 import { Like } from 'typeorm';
 import { Category } from './categories.entity';
 
 const categoryRepo = AppDataSource.getRepository(Category);
 
-export async function getCategories(pageNumber: number, pageSize: number, filter: FilterCategory) {
+export async function getCategories(pageNumber: number, pageSize: number, filter: FilterCategoryDTO) {
     const offset = pageSize * (pageNumber - 1);
     const limit = pageSize;
     let where: {
