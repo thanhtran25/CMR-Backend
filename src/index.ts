@@ -7,6 +7,7 @@ dotenv.config();
 
 import * as express from "express";
 import * as morgan from 'morgan';
+import { NotFound } from 'http-errors';
 import { AppDataSource } from "./core/database";
 import authRouter from "./auth/auth.router";
 import userRouter from './users/users.router';
@@ -36,6 +37,10 @@ async function bootstrap() {
     app.use('/brands', brandRouter);
     app.use('/inventories', inventoryRouter);
     app.use('/products', productRouter);
+
+    app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+        return next(new NotFound('Route not found'))
+    });
 
     app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
         if (req.file) {

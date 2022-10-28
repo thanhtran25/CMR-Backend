@@ -1,6 +1,3 @@
-export class FilterBranchDTO {
-    name: string
-}
 
 export class CreateBranchDTO {
     name: string;

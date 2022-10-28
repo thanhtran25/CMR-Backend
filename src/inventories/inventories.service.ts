@@ -1,20 +1,16 @@
 import { BadRequest } from 'http-errors';
 import { AppDataSource } from '../core/database';
+import { FilterPagination } from '../core/interfaces/filter.interface';
+import { buildPagination } from '../core/utils/paginantion.util';
 import { CreateInventoryDTO, UpdateInventoryDTO } from './inventories.dto';
 import { Inventory } from './inventories.entity';
 
 const inventoryRepo = AppDataSource.getRepository(Inventory);
 
-export async function getInventories(pageNumber: number, pageSize: number) {
-    const offset = pageSize * (pageNumber - 1);
-    const limit = pageSize;
-
-    const inventories = await inventoryRepo.find({
-        skip: offset,
-        take: limit,
-    });
-
-    return inventories;
+export async function getInventories(filters: FilterPagination) {
+    const query = buildPagination(Inventory, filters)
+    const users = await inventoryRepo.find(query);
+    return users;
 }
 
 export async function getInventory(id: number) {
@@ -42,8 +38,10 @@ export async function updateInventory(id: number, updateInventoryDTO: UpdateInve
     if (!inventory) {
         throw new BadRequest('Inventory not found');
     }
-    inventory.sold += updateInventoryDTO.sold;
-    inventory.amount -= updateInventoryDTO.sold;
+    inventory = {
+        ...inventory,
+        ...updateInventoryDTO
+    }
     await inventoryRepo.update(id, inventory);
     return inventory;
 }

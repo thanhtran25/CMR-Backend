@@ -24,9 +24,6 @@ export class Brand {
     @Column()
     name: string;
 
-    @Column()
-    hele: string;
-
     @CreateDateColumn()
     createdAt: Date;
 

@@ -1,41 +1,29 @@
 import { BadRequest } from 'http-errors';
 import { AppDataSource } from '../core/database';
-import { CreateBranchDTO, FilterBranchDTO, UpdateBranchDTO } from './brands.dto';
-import { Like } from 'typeorm';
+import { CreateBranchDTO, UpdateBranchDTO } from './brands.dto';
 import { Brand } from './brands.entity';
+import { buildPagination } from '../core/utils/paginantion.util';
+import { FilterPagination } from '../core/interfaces/filter.interface';
 
 const branchRepo = AppDataSource.getRepository(Brand);
 
-export async function getBrands(pageNumber: number, pageSize: number, filter: FilterBranchDTO) {
-    const offset = pageSize * (pageNumber - 1);
-    const limit = pageSize;
-    let where: {
-        name?: any;
-    } = {};
-
-    if (filter.name) {
-        where.name = Like(`%${filter.name}%`)
-    }
-    const brands = await branchRepo.find({
-        skip: offset,
-        take: limit,
-        where: where
-    });
-
+export async function getBrands(filters: FilterPagination) {
+    const query = buildPagination(Brand, filters)
+    const brands = await branchRepo.find(query);
     return brands;
 }
 
-export async function getBranch(id: number) {
-    const branch = await branchRepo.findOneBy({
+export async function getBrand(id: number) {
+    const brand = await branchRepo.findOneBy({
         id: id
     });
-    if (!branch) {
+    if (!brand) {
         throw new BadRequest('Brand not found');
     }
-    return branch;
+    return brand;
 }
 
-export async function createBranch(createBranchDTO: CreateBranchDTO) {
+export async function createBrand(createBranchDTO: CreateBranchDTO) {
     const duplicatedBranch = await branchRepo.findOneBy({
         name: createBranchDTO.name
     });
@@ -48,28 +36,28 @@ export async function createBranch(createBranchDTO: CreateBranchDTO) {
     return newBranch;
 }
 
-export async function updateBranch(id: number, updateBranchDTO: UpdateBranchDTO) {
-    let branch = await branchRepo.findOneBy({
+export async function updateBrand(id: number, updateBranchDTO: UpdateBranchDTO) {
+    let brand = await branchRepo.findOneBy({
         id: id
     });
 
-    if (!branch) {
+    if (!brand) {
         throw new BadRequest('Brand not found');
     }
-    branch = {
-        ...branch,
+    brand = {
+        ...brand,
         ...updateBranchDTO,
     }
-    await branchRepo.update(id, branch);
-    return branch;
+    await branchRepo.update(id, brand);
+    return brand;
 }
 
-export async function deleteBranch(id: number) {
-    const branch = await branchRepo.findOneBy({
+export async function deleteBrand(id: number) {
+    const brand = await branchRepo.findOneBy({
         id: id
     });
 
-    if (!branch) {
+    if (!brand) {
         throw new BadRequest('Brand not found');
     }
 

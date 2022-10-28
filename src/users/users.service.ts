@@ -3,35 +3,15 @@ import * as bcrypt from 'bcrypt';
 import { AppDataSource } from '../core/database';
 import { User } from '../users/users.entity';
 import { ROUNDS_NUMBER } from '../core/constant'
-import { ChangePositionDTO, ChangePasswordDTO, CreateUserDTO, FilterUserDTO, UpdateUserDTO } from './users.dto';
-import { Like } from 'typeorm';
+import { ChangePositionDTO, ChangePasswordDTO, CreateUserDTO, UpdateUserDTO } from './users.dto';
+import { FilterPagination } from '../core/interfaces/filter.interface';
+import { buildPagination } from '../core/utils/paginantion.util';
 
 const userRepo = AppDataSource.getRepository(User);
 
-export async function getUsers(pageNumber: number, pageSize: number, filter: FilterUserDTO) {
-    const offset = pageSize * (pageNumber - 1);
-    const limit = pageSize;
-    let where: {
-        fullname?: any;
-        address?: any;
-        gender?: any;
-    } = {};
-
-    if (filter.name) {
-        where.fullname = Like(`%${filter.name}%`)
-    }
-    if (filter.address) {
-        where.address = Like(`%${filter.address}%`)
-    }
-    if (filter.gender) {
-        where.gender = filter.gender
-    }
-    const users = await userRepo.find({
-        skip: offset,
-        take: limit,
-        where: where
-    });
-
+export async function getUsers(filters: FilterPagination) {
+    const query = buildPagination(User, filters)
+    const users = await userRepo.find(query);
     return users;
 }
 

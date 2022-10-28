@@ -1,9 +1,9 @@
 export class CreateInventoryDTO {
-    sold: number;
-    amount: number;
-    productId: number;
+    name: string;
+    address: string;
 }
 
 export class UpdateInventoryDTO {
-    sold: number;
+    name: string;
+    address: string;
 }

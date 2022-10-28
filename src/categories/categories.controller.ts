@@ -2,19 +2,22 @@ import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import { validate } from '../core/utils/validate.util';
 import * as categoryService from './categories.service';
-import { CreateCategoryDTO, FilterCategoryDTO, UpdateCategoryDTO } from './categories.dto';
+import { CreateCategoryDTO, UpdateCategoryDTO } from './categories.dto';
 import { PAGINATION } from '../core/constant';
+import { FilterPagination } from '../core/interfaces/filter.interface';
 
 export async function getCategories(req: Request, res: Response, next: NextFunction) {
     try {
-        const pageNumber = +req.query.page || PAGINATION.DEFAULT_PAGE_NUMBER;
-        const pageSize = +req.query.limit || PAGINATION.DEFAULT_PAGE_SIZE;
+        const schema = Joi.object({
+            page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
+            limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
+            sort: Joi.string().allow(''),
+            sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
+            name: Joi.string().allow(''),
+        });
 
-        let filter = new FilterCategoryDTO();
-
-        filter.name = req.query.name as string;
-
-        const result = await categoryService.getCategories(pageNumber, pageSize, filter);
+        const query: FilterPagination = validate<FilterPagination>(req.query, schema);
+        const result = await categoryService.getCategories(query);
         return res.status(200).send(result);
 
     } catch (error) {

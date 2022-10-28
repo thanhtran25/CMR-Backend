@@ -2,23 +2,25 @@ import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import { validate } from '../core/utils/validate.util';
 import * as productService from './products.service';
-import { CreateProductDTO, FilterProductDTO, UpdateProductDTO } from './products.dto';
+import { CreateProductDTO, UpdateProductDTO } from './products.dto';
 import { PAGINATION } from '../core/constant';
+import { FilterPagination } from '../core/interfaces/filter.interface';
 
 export async function getProducts(req: Request, res: Response, next: NextFunction) {
     try {
-        const pageNumber = +req.query.page || PAGINATION.DEFAULT_PAGE_NUMBER;
-        const pageSize = +req.query.limit || PAGINATION.DEFAULT_PAGE_SIZE;
+        const schema = Joi.object({
+            page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
+            limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
+            sort: Joi.string().allow(''),
+            sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
+            description: Joi.string().allow(''),
+            brandId: Joi.number().allow(''),
+            categoryId: Joi.number().allow(''),
+            saleCodeId: Joi.number().allow(''),
+        });
 
-        let filter = new FilterProductDTO();
-        filter.name = req.query.name as string;
-        filter.description = req.query.description as string;
-        filter.brandId = +req.query.brandId as number;
-        filter.categoryId = +req.query.categoryId as number;
-        filter.saleCodeId = +req.query.saleCodeId as number;
-        filter.order = req.query.order as string;
-
-        const result = await productService.getProducts(pageNumber, pageSize, filter);
+        const query: FilterPagination = validate<FilterPagination>(req.query, schema);
+        const result = await productService.getProducts(query);
         return res.status(200).send(result);
 
     } catch (error) {
@@ -46,7 +48,7 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
             categoryId: Joi.number().required(),
             saleCodeId: Joi.number(),
             images: Joi.array().required().min(2).max(2),
-            amount: Joi.number().required()
+            warrantyPeriod: Joi.number().required()
         });
 
         const { images, amount, ...value } = validate({
@@ -58,7 +60,7 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
             ...value,
             img1: images[0],
             img2: images[1],
-        }, amount)
+        })
         return res.status(201).send(result);
 
     } catch (error) {

@@ -26,12 +26,6 @@ export class ChangePasswordDTO {
     newPassword: string;
 }
 
-export class FilterUserDTO {
-    name: string;
-    gender: Gender;
-    address: string;
-}
-
 export class ChangePositionDTO {
     id: number
     role: Roles;
