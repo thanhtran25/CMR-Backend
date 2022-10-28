@@ -15,7 +15,6 @@ import {
     Roles,
     Gender
 } from '../core/enum';
-import { Insurance } from '../insurances/insurances.entity';
 import { PurchaseOrder } from '../purchase_orders/purchase_orders.entity';
 
 @Entity('users')
@@ -77,9 +76,6 @@ export class User {
 
     @OneToMany(() => PurchaseOrder, (purchaseOrder) => purchaseOrder.staff)
     purchaseOrders: Relation<PurchaseOrder>[];
-
-    @OneToMany(() => Insurance, (insurance) => insurance.user)
-    insurances: Relation<Insurance>[];
 
     @OneToMany(() => Token, (token) => token.user)
     tokens: Relation<Token>[];

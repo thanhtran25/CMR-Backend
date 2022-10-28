@@ -3,21 +3,24 @@ import { Request, Response, NextFunction } from 'express';
 import { Gender, Roles } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as userService from './users.service';
-import { ChangePasswordDTO, ChangePositionDTO, CreateUserDTO, FilterUserDTO, UpdateUserDTO } from './users.dto';
+import { ChangePasswordDTO, ChangePositionDTO, CreateUserDTO, UpdateUserDTO } from './users.dto';
 import { PAGINATION } from '../core/constant';
+import { FilterPagination } from '../core/interfaces/filter.interface';
 
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
     try {
-        const pageNumber = +req.query.page || PAGINATION.DEFAULT_PAGE_NUMBER;
-        const pageSize = +req.query.limit || PAGINATION.DEFAULT_PAGE_SIZE;
+        const schema = Joi.object({
+            page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
+            limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
+            sort: Joi.string().allow(''),
+            sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
+            fullname: Joi.string().allow(''),
+            gender: Joi.string().valid(...Object.values(Gender)).allow(''),
+            address: Joi.string().allow(''),
+        });
 
-        let filter = new FilterUserDTO();
-
-        filter.name = req.query.name as string;
-        filter.address = req.query.address as string;
-        filter.gender = req.query.gender as Gender;
-
-        const result = await userService.getUsers(pageNumber, pageSize, filter);
+        const query: FilterPagination = validate<FilterPagination>(req.query, schema);
+        const result = await userService.getUsers(query);
         return res.status(200).send(result);
 
     } catch (error) {

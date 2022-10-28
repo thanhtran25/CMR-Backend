@@ -10,6 +10,7 @@ import {
 
 } from 'typeorm';
 import { Product } from '../products/products.entity';
+import { ProductsInventories } from '../products_inventories/products_inventories.entity';
 
 @Entity('inventories')
 export class Inventory {
@@ -23,10 +24,10 @@ export class Inventory {
     id: number;
 
     @Column()
-    sold: number;
+    name: string;
 
     @Column()
-    amount: number;
+    address: string;
 
     @CreateDateColumn({
         name: 'created_at'
@@ -38,9 +39,6 @@ export class Inventory {
     })
     updatedAt: Date;
 
-    @OneToOne(() => Product, (product) => product.inventory, { nullable: false })
-    @JoinColumn()
-    product: Relation<Product>;
-    @Column()
-    productId: number
+    @OneToOne(() => ProductsInventories, (productsInventories) => productsInventories.inventory)
+    productsInventories: Relation<ProductsInventories>[];
 } 

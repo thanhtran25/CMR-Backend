@@ -15,8 +15,7 @@ import {
 import { BillDetail } from '../bill_details/bill_details.entity';
 import { Brand } from '../brands/brands.entity';
 import { Category } from '../categories/categories.entity';
-import { Inventory } from '../inventories/inventories.entity';
-import { ProductDetail } from '../product_detail/product_detail.entity';
+import { ProductsInventories } from '../products_inventories/products_inventories.entity';
 import { PurchaseOrderDetail } from '../purchase_order_detail/purchase_order_detail.entity';
 import { SaleCode } from '../sale_codes/sale_codes.entity';
 
@@ -48,6 +47,9 @@ export class Product {
     @Column()
     description: string;
 
+    @Column()
+    warrantyPeriod: number;
+
     @CreateDateColumn()
     createdAt: Date;
 
@@ -69,21 +71,18 @@ export class Product {
     @Column()
     categoryId: number;
 
-    @ManyToOne(() => SaleCode, (saleCode) => saleCode.products)
+    @ManyToOne(() => SaleCode, (saleCode) => saleCode.products,)
     @JoinColumn({ name: 'sale_code_id' })
     saleCode: Relation<SaleCode>;
-    @Column()
+    @Column({ nullable: true })
     saleCodeId: number;
 
-    @OneToOne(() => Inventory, (inventory) => inventory.product, { nullable: false })
-    inventory: Relation<Inventory>;
+    @OneToMany(() => ProductsInventories, (productsInventories) => productsInventories.product)
+    productsInventories: Relation<ProductsInventories>[];
 
     @OneToMany(() => BillDetail, (billDetail) => billDetail.product)
     billDetails: Relation<BillDetail>[];
 
     @OneToMany(() => PurchaseOrderDetail, (purchaseOderDetail) => purchaseOderDetail.product)
     purchaseOrderDetails: Relation<PurchaseOrderDetail>[];
-
-    @OneToMany(() => ProductDetail, (productDetail) => productDetail.product)
-    productDetails: Relation<ProductDetail>[];
 }

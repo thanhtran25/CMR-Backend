@@ -1,27 +1,15 @@
 import { BadRequest } from 'http-errors';
 import { AppDataSource } from '../core/database';
-import { CreateCategoryDTO, FilterCategoryDTO, UpdateCategoryDTO } from './categories.dto';
-import { Like } from 'typeorm';
+import { CreateCategoryDTO, UpdateCategoryDTO } from './categories.dto';
 import { Category } from './categories.entity';
+import { buildPagination } from '../core/utils/paginantion.util';
+import { FilterPagination } from '../core/interfaces/filter.interface';
 
 const categoryRepo = AppDataSource.getRepository(Category);
 
-export async function getCategories(pageNumber: number, pageSize: number, filter: FilterCategoryDTO) {
-    const offset = pageSize * (pageNumber - 1);
-    const limit = pageSize;
-    let where: {
-        name?: any;
-    } = {};
-
-    if (filter.name) {
-        where.name = Like(`%${filter.name}%`)
-    }
-    const categories = await categoryRepo.find({
-        skip: offset,
-        take: limit,
-        where: where
-    });
-
+export async function getCategories(filters: FilterPagination) {
+    const query = buildPagination(Category, filters)
+    const categories = await categoryRepo.find(query);
     return categories;
 }
 

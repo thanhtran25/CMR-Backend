@@ -20,12 +20,3 @@ export class UpdateProductDTO {
     categoryId: number;
     saleCodeId?: number;
 }
-
-export class FilterProductDTO {
-    name: string;
-    order: string;
-    description: string;
-    brandId: number;
-    categoryId: number;
-    saleCodeId: number;
-}
