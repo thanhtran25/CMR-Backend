@@ -69,3 +69,12 @@ export async function updateInventory(req: Request, res: Response, next: NextFun
     }
 }
 
+export async function deleteInventory(req: Request, res: Response, next: NextFunction) {
+    try {
+        await inventoryService.deleteInventory(parseInt(req.params.id))
+        return res.status(200).send();
+
+    } catch (error) {
+        return next(error);
+    }
+}
