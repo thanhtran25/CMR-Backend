@@ -72,17 +72,25 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
     try {
         const schema = Joi.object({
             name: Joi.string(),
-            price: Joi.number().required(),
-            img1: Joi.string().required(),
-            img2: Joi.string().required(),
-            description: Joi.string().required(),
-            brandId: Joi.number().required(),
-            categoryId: Joi.number().required(),
+            price: Joi.number(),
+            description: Joi.string(),
+            brandId: Joi.number(),
+            categoryId: Joi.number(),
             saleCodeId: Joi.number(),
+            images: Joi.any(),
+            warrantyPeriod: Joi.number()
         });
 
-        const value = validate<UpdateProductDTO>(req.body, schema);
-        const result = await productService.updateProduct(parseInt(req.params.id), value)
+        const { images, amount, ...value } = validate({
+            ...req.body,
+            images: Array.isArray(req.files) && req.files.map(file => file.filename)
+        }, schema)
+
+        const result = await productService.updateProduct(+req.params.id, {
+            ...value,
+            img1: images[0],
+            img2: images[1],
+        })
         return res.status(200).send(result);
 
     } catch (error) {
@@ -90,9 +98,9 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
     }
 }
 
-export async function deleteUser(req: Request, res: Response, next: NextFunction) {
+export async function deleteProduct(req: Request, res: Response, next: NextFunction) {
     try {
-        await productService.deleteUser(parseInt(req.params.id))
+        await productService.deleteProduct(parseInt(req.params.id))
         return res.status(200).send();
 
     } catch (error) {

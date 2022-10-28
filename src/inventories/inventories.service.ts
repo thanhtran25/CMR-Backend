@@ -45,3 +45,15 @@ export async function updateInventory(id: number, updateInventoryDTO: UpdateInve
     await inventoryRepo.update(id, inventory);
     return inventory;
 }
+
+export async function deleteInventory(id: number) {
+    const inventory = await inventoryRepo.findOneBy({
+        id: id
+    });
+
+    if (!inventory) {
+        throw new BadRequest('Inventory not found');
+    }
+
+    await inventoryRepo.softDelete(id);
+}

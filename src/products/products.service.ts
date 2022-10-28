@@ -1,3 +1,5 @@
+import * as fs from "fs/promises";
+import * as path from 'path';
 import { BadRequest } from 'http-errors';
 import { AppDataSource } from '../core/database';
 import { Product } from '../products/products.entity';
@@ -37,6 +39,10 @@ export async function updateProduct(id: number, updateProductDTO: UpdateProductD
     if (!product) {
         throw new BadRequest('Product not found');
     }
+    if (updateProductDTO.img1) {
+        fs.unlink(path.join(__dirname, '../../public/product/image', product.img1)).catch(error => console.log(error))
+        fs.unlink(path.join(__dirname, '../../public/product/image', product.img2)).catch(error => console.log(error))
+    }
     product = {
         ...product,
         ...updateProductDTO,
@@ -46,13 +52,13 @@ export async function updateProduct(id: number, updateProductDTO: UpdateProductD
     return product;
 }
 
-export async function deleteUser(id: number) {
+export async function deleteProduct(id: number) {
     const product = await productRepo.findOneBy({
         id: id
     });
 
     if (!product) {
-        throw new BadRequest('User not found');
+        throw new BadRequest('Product not found');
     }
 
     await productRepo.softDelete(id);

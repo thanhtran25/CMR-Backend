@@ -7,6 +7,7 @@ import {
     OneToOne,
     Relation,
     JoinColumn,
+    DeleteDateColumn,
 
 } from 'typeorm';
 import { Product } from '../products/products.entity';
@@ -38,6 +39,9 @@ export class Inventory {
         name: 'updated_at'
     })
     updatedAt: Date;
+
+    @DeleteDateColumn({ default: null })
+    deletedAt: Date;
 
     @OneToOne(() => ProductsInventories, (productsInventories) => productsInventories.inventory)
     productsInventories: Relation<ProductsInventories>[];

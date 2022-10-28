@@ -8,6 +8,7 @@ export class CreateProductDTO {
     brandId: number;
     categoryId: number;
     saleCodeId?: number;
+    warrantyPeriod: number;
 }
 
 export class UpdateProductDTO {
@@ -19,4 +20,5 @@ export class UpdateProductDTO {
     brandId: number;
     categoryId: number;
     saleCodeId?: number;
+    warrantyPeriod: number;
 }
