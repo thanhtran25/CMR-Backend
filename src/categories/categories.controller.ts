@@ -54,7 +54,7 @@ export async function createCategory(req: Request, res: Response, next: NextFunc
 export async function updateCategory(req: Request, res: Response, next: NextFunction) {
     try {
         const schema = Joi.object({
-            name: Joi.string().required(),
+            name: Joi.string(),
         });
 
         const value = validate<UpdateCategoryDTO>(req.body, schema);

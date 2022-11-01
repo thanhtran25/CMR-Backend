@@ -12,6 +12,10 @@ import { PurchaseOrder } from '../purchase_orders/purchase_orders.entity';
 
 @Entity('suppliers')
 export class Supplier {
+    constructor(data: Partial<Supplier>) {
+        Object.assign(this, data)
+    }
+
     @PrimaryGeneratedColumn({
         type: 'bigint'
     })
@@ -23,8 +27,8 @@ export class Supplier {
     @Column()
     address: string;
 
-    @Column()
-    numberPhone: number;
+    @Column({ nullable: true })
+    numberPhone: string;
 
     @CreateDateColumn()
     createdAt: Date;
