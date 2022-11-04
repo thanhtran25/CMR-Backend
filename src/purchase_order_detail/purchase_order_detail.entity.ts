@@ -11,6 +11,9 @@ import { PurchaseOrder } from '../purchase_orders/purchase_orders.entity';
 
 @Entity('purchase_order_details')
 export class PurchaseOrderDetail {
+    constructor(data: Partial<PurchaseOrderDetail>) {
+        Object.assign(this, data);
+    }
     @PrimaryGeneratedColumn({
         type: 'bigint'
     })
@@ -23,14 +26,16 @@ export class PurchaseOrderDetail {
     price!: number;
 
     @ManyToOne(() => PurchaseOrder, (purchaseOrder) => purchaseOrder.purchaseOrderDetails, { nullable: false })
-    @JoinColumn({
-        name: 'purchase_order_id',
-    })
+    @JoinColumn()
     purchaseOrder!: Relation<PurchaseOrder>;
 
+    @Column()
+    purchaseOrderId: number
+
     @ManyToOne(() => Product, (product) => product.purchaseOrderDetails, { nullable: false })
-    @JoinColumn({
-        name: 'product_id',
-    })
+    @JoinColumn()
     product!: Relation<Product>;
+
+    @Column()
+    productId: number;
 }

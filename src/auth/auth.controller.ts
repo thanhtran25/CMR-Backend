@@ -15,7 +15,6 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
             gender: Joi.string().default(Gender.MALE),
             address: Joi.string().max(255).default(null),
             numberPhone: Joi.string().min(10).max(11),
-            role: Joi.string().default(Roles.CUSTOMER),
         });
 
         const value = validate<SignupDTO>(req.body, schema);

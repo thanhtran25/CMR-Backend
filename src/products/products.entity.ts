@@ -83,6 +83,6 @@ export class Product {
     @OneToMany(() => BillDetail, (billDetail) => billDetail.product)
     billDetails: Relation<BillDetail>[];
 
-    @OneToMany(() => PurchaseOrderDetail, (purchaseOderDetail) => purchaseOderDetail.product)
+    @OneToMany(() => PurchaseOrderDetail, (purchaseOrderDetail) => purchaseOrderDetail.product)
     purchaseOrderDetails: Relation<PurchaseOrderDetail>[];
 }
