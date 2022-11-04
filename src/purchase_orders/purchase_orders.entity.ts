@@ -7,6 +7,7 @@ import {
     ManyToOne,
     Relation,
     OneToMany,
+    Column,
 } from 'typeorm';
 import { PurchaseOrderDetail } from '../purchase_order_detail/purchase_order_detail.entity';
 import { Supplier } from '../suppliers/suppliers.entity';
@@ -14,6 +15,10 @@ import { User } from '../users/users.entity';
 
 @Entity('purchase_orders')
 export class PurchaseOrder {
+    constructor(data: Partial<PurchaseOrder>) {
+        Object.assign(this, data);
+    }
+
     @PrimaryGeneratedColumn({
         type: 'bigint'
     })
@@ -30,17 +35,19 @@ export class PurchaseOrder {
     updatedAt: Date;
 
     @ManyToOne(() => Supplier, (supplier) => supplier.purchaseOrders, { nullable: false })
-    @JoinColumn({
-        name: 'supplier_id'
-    })
+    @JoinColumn()
     supplier: Relation<Supplier>;
 
+    @Column()
+    supplierId: number;
+
     @ManyToOne(() => User, (user) => user.purchaseOrders, { nullable: false })
-    @JoinColumn({
-        name: 'staff_id'
-    })
+    @JoinColumn()
     staff: Relation<User>;
 
-    @OneToMany(() => PurchaseOrderDetail, (purchaseOderDetail) => purchaseOderDetail.product)
+    @Column()
+    staffId: number;
+
+    @OneToMany(() => PurchaseOrderDetail, (purchaseOrderDetail) => purchaseOrderDetail.purchaseOrder)
     purchaseOrderDetails: Relation<PurchaseOrderDetail>[];
 }

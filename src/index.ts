@@ -15,6 +15,8 @@ import categoryRouter from './categories/categories.router';
 import brandRouter from './brands/brands.router';
 import inventoryRouter from './inventories/inventories.router';
 import productRouter from './products/products.router';
+import supplierRouter from './suppliers/suppliers.router';
+import purchaseOrderRouter from './purchase_orders/purchase_orders.router';
 import * as resUtil from './core/utils/res.util';
 
 async function bootstrap() {
@@ -37,6 +39,8 @@ async function bootstrap() {
     app.use('/brands', brandRouter);
     app.use('/inventories', inventoryRouter);
     app.use('/products', productRouter);
+    app.use('/suppliers', supplierRouter);
+    app.use('/purchase-orders', purchaseOrderRouter);
 
     app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
         return next(new NotFound('Route not found'))

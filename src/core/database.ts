@@ -18,6 +18,6 @@ export const AppDataSource = new DataSource({
     ],
     migrations: [path.join(__dirname, "../migrations/*{.js,.ts}")],
     namingStrategy: new SnakeNamingStrategy(),
-    logging: true
+    logging: (process.env.LOGGING === 'true') ? true : false
 });
 
