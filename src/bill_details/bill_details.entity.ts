@@ -24,14 +24,16 @@ export class BillDetail {
     price!: number;
 
     @ManyToOne(() => Bill, (bill) => bill.billDetails, { nullable: false })
-    @JoinColumn({
-        name: 'bill_id',
-    })
+    @JoinColumn()
     bill!: Relation<Bill>;
 
+    @Column()
+    billId: number;
+
     @ManyToOne(() => Product, (product) => product.billDetails, { nullable: false })
-    @JoinColumn({
-        name: 'product_id',
-    })
+    @JoinColumn()
     product!: Relation<Product>;
+
+    @Column()
+    productId: number;
 }

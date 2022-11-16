@@ -8,7 +8,6 @@ import {
     Relation,
     ManyToOne,
     JoinColumn,
-    OneToOne,
 
 } from 'typeorm';
 import { BillDetail } from '../bill_details/bill_details.entity';
@@ -17,6 +16,10 @@ import { User } from '../users/users.entity';
 
 @Entity('bills')
 export class Bill {
+    constructor(data: Partial<Bill>) {
+        Object.assign(this, data);
+    }
+
     @PrimaryGeneratedColumn({
         type: 'bigint'
     })
@@ -32,8 +35,9 @@ export class Bill {
 
     @Column({
         name: 'number_phone',
+        length: 11
     })
-    numberPhone: number;
+    numberPhone: string;
 
     @Column({
         type: 'enum',
@@ -41,11 +45,6 @@ export class Bill {
         default: OrderStates.WAITING,
     })
     states: OrderStates;
-
-    @Column({
-        default: false
-    })
-    seen: boolean;
 
     @Column({
         type: 'enum',
@@ -65,10 +64,11 @@ export class Bill {
     updatedAt: Date;
 
     @ManyToOne(() => User, (user) => user.bills)
-    @JoinColumn({
-        name: 'user_id'
-    })
+    @JoinColumn()
     user: User;
+
+    @Column({ nullable: true })
+    userId: number;
 
     @OneToMany(() => BillDetail, (billDetail) => billDetail.bill, { nullable: false })
     billDetails: Relation<BillDetail>[];

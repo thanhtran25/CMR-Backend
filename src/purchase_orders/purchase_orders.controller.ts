@@ -5,7 +5,6 @@ import { PAGINATION } from '../core/constant';
 import { FilterPagination } from '../core/interfaces/filter.interface';
 import * as purchaseOrderService from './purchase_orders.service'
 import { CreatePurchaseOrderDTO } from './purchase_orders.dto';
-import { number } from 'joi';
 
 export async function getPurchaseOrders(req: Request, res: Response, next: NextFunction) {
     try {
