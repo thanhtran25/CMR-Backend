@@ -4,7 +4,7 @@ export class PurchaseOrderDetailDTO {
     productId: number;
 }
 
-export class createPurchaseOrderDTO {
+export class CreatePurchaseOrderDTO {
     supplierId: number;
     staffId: number;
     inventoryId: number;

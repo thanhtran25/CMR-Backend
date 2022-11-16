@@ -11,8 +11,8 @@ const userRepo = AppDataSource.getRepository(User);
 
 export async function getUsers(filters: FilterPagination) {
     const query = buildPagination(User, filters)
-    const users = await userRepo.find(query);
-    return users;
+    const [result, total] = await userRepo.findAndCount(query);
+    return { totalPage: total, users: result };
 }
 
 export async function getUser(id: number) {
@@ -48,11 +48,7 @@ export async function updateUser(id: number, updateUserDTO: UpdateUserDTO) {
     if (!user) {
         throw new BadRequest('User not found');
     }
-    user = {
-        ...user,
-        ...updateUserDTO,
-    }
-    await userRepo.update(id, user);
+    await userRepo.update(id, updateUserDTO);
 
     delete user.hashedPassword;
     return user;
@@ -99,7 +95,5 @@ export async function changePosition(changePosition: ChangePositionDTO) {
         throw new BadRequest('User not found');
     }
 
-    user.role = changePosition.role;
-
-    await userRepo.update(user.id, user);
+    await userRepo.update(user.id, { role: changePosition.role });
 }

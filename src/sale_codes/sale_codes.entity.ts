@@ -11,6 +11,10 @@ import { Product } from '../products/products.entity';
 
 @Entity('sale_codes')
 export class SaleCode {
+    constructor(data: Partial<SaleCode>) {
+        Object.assign(this, data);
+    }
+
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -20,24 +24,16 @@ export class SaleCode {
     @Column()
     percent: number;
 
-    @Column({
-        name: 'start_date',
-    })
+    @Column()
     startDate: Date;
 
-    @Column({
-        name: 'end_date',
-    })
+    @Column()
     endDate: Date;
 
-    @CreateDateColumn({
-        name: 'created_at'
-    })
+    @CreateDateColumn()
     createdAt: Date;
 
-    @UpdateDateColumn({
-        name: 'updated_at'
-    })
+    @UpdateDateColumn()
     updatedAt: Date;
 
     @OneToMany(() => Product, (product) => product.category)

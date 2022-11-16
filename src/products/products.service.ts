@@ -11,8 +11,8 @@ const productRepo = AppDataSource.getRepository(Product);
 
 export async function getProducts(filters: FilterPagination) {
     const query = buildPagination(Product, filters)
-    const products = await productRepo.find(query);
-    return products;
+    const [result, total] = await productRepo.findAndCount(query);
+    return { totalPage: total, products: result };
 }
 
 export async function getProduct(id: number) {
@@ -32,7 +32,7 @@ export async function createProduct(createProductDTO: CreateProductDTO) {
 }
 
 export async function updateProduct(id: number, updateProductDTO: UpdateProductDTO) {
-    let product = await productRepo.findOneBy({
+    const product = await productRepo.findOneBy({
         id: id
     });
 
@@ -43,12 +43,8 @@ export async function updateProduct(id: number, updateProductDTO: UpdateProductD
         fs.unlink(path.join(__dirname, '../../public/product/image', product.img1)).catch(error => console.log(error))
         fs.unlink(path.join(__dirname, '../../public/product/image', product.img2)).catch(error => console.log(error))
     }
-    product = {
-        ...product,
-        ...updateProductDTO,
-    }
-    await productRepo.update(id, product);
 
+    await productRepo.update(id, updateProductDTO);
     return product;
 }
 

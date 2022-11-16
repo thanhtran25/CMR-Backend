@@ -4,7 +4,7 @@ import { validate } from '../core/utils/validate.util';
 import { PAGINATION } from '../core/constant';
 import { FilterPagination } from '../core/interfaces/filter.interface';
 import * as purchaseOrderService from './purchase_orders.service'
-import { createPurchaseOrderDTO } from './purchase_orders.dto';
+import { CreatePurchaseOrderDTO } from './purchase_orders.dto';
 import { number } from 'joi';
 
 export async function getPurchaseOrders(req: Request, res: Response, next: NextFunction) {
@@ -52,7 +52,7 @@ export async function createPurchaseOrder(req: Request, res: Response, next: Nex
         })
 
 
-        const value = validate<createPurchaseOrderDTO>({
+        const value = validate<CreatePurchaseOrderDTO>({
             ...req.body,
             staffId: req.user.id
         }, schema);
@@ -65,6 +65,3 @@ export async function createPurchaseOrder(req: Request, res: Response, next: Nex
     }
 }
 
-export async function updatePurchaseOrder(req: Request, res: Response, next: NextFunction) {
-
-}

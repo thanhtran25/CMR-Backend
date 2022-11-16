@@ -9,8 +9,8 @@ const categoryRepo = AppDataSource.getRepository(Category);
 
 export async function getCategories(filters: FilterPagination) {
     const query = buildPagination(Category, filters)
-    const categories = await categoryRepo.find(query);
-    return categories;
+    const [result, total] = await categoryRepo.findAndCount(query);
+    return { totalPage: total, categories: result };
 }
 
 export async function getCategory(id: number) {
@@ -37,18 +37,14 @@ export async function createCategory(createCategoryDTO: CreateCategoryDTO) {
 }
 
 export async function updateCategory(id: number, updateCategoryDTO: UpdateCategoryDTO) {
-    let category = await categoryRepo.findOneBy({
+    const category = await categoryRepo.findOneBy({
         id: id
     });
 
     if (!category) {
         throw new BadRequest('Category not found');
     }
-    category = {
-        ...category,
-        ...updateCategoryDTO,
-    }
-    await categoryRepo.update(id, category);
+    await categoryRepo.update(id, updateCategoryDTO);
     return category;
 }
 

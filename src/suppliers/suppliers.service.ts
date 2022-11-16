@@ -9,8 +9,8 @@ const supplierRepo = AppDataSource.getRepository(Supplier);
 
 export async function getSuppliers(filters: FilterPagination) {
     const query = buildPagination(Supplier, filters)
-    const suppliers = await supplierRepo.find(query);
-    return suppliers;
+    const [result, total] = await supplierRepo.findAndCount(query);
+    return { totalPage: total, suppliers: result };
 }
 
 export async function getSupplier(id: number) {
@@ -37,18 +37,14 @@ export async function createSupplier(createSupplierDTO: CreateSupplierDTO) {
 }
 
 export async function updateSupplier(id: number, updateCategoryDTO: UpdateSupplierDTO) {
-    let supplier = await supplierRepo.findOneBy({
+    const supplier = await supplierRepo.findOneBy({
         id: id
     });
 
     if (!supplier) {
         throw new BadRequest('Supplier not found');
     }
-    supplier = {
-        ...supplier,
-        ...updateCategoryDTO,
-    }
-    await supplierRepo.update(id, supplier);
+    await supplierRepo.update(id, updateCategoryDTO);
     return supplier;
 }
 
