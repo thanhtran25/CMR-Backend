@@ -18,6 +18,7 @@ import productRouter from './products/products.router';
 import supplierRouter from './suppliers/suppliers.router';
 import purchaseOrderRouter from './purchase_orders/purchase_orders.router';
 import saleCodeRouter from './sale_codes/sale_codes.router';
+import billRouter from './bills/bills.router';
 import * as resUtil from './core/utils/res.util';
 
 async function bootstrap() {
@@ -43,6 +44,7 @@ async function bootstrap() {
     app.use('/suppliers', supplierRouter);
     app.use('/purchase-orders', purchaseOrderRouter);
     app.use('/sale-codes', saleCodeRouter);
+    app.use('/bills', billRouter);
 
     app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
         return next(new NotFound('Route not found'))

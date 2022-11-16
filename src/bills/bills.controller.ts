@@ -1,0 +1,76 @@
+import * as Joi from 'joi';
+import { Request, Response, NextFunction } from 'express';
+import { validate } from '../core/utils/validate.util';
+import { PAGINATION } from '../core/constant';
+import { FilterPagination } from '../core/interfaces/filter.interface';
+import * as billService from './bills.service';
+import { CreateBillDTO, UpdateBillDTO } from './bills.dto';
+import { BillStatus, OrderStates } from '../core/enum';
+import { userSignin } from '../core/utils/user-signin.util';
+
+export async function getBills(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
+            limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
+            sort: Joi.string().allow(''),
+            sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
+        });
+
+        const query: FilterPagination = validate<FilterPagination>(req.query, schema);
+        const result = await billService.getBills(query);
+        return res.status(200).send(result);
+
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function getBill(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await billService.getBill(parseInt(req.params.id));
+        return res.status(200).send(result);
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function createBill(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            userId: Joi.number(),
+            customerName: Joi.string().required(),
+            address: Joi.string().required(),
+            numberPhone: Joi.string().min(10).max(11).required(),
+            states: Joi.string().default(OrderStates.WAITING),
+            status: Joi.string().default(BillStatus.UNPAID),
+            details: Joi.array().items({
+                count: Joi.number().required(),
+                price: Joi.number().required(),
+                productId: Joi.number().required(),
+            }).min(1).required(),
+        })
+
+        let createBill = {
+            ...req.body
+        };
+        const user = userSignin(req, res, next);
+        if (user) {
+            createBill.userId = user.id;
+        }
+
+        const value = validate<CreateBillDTO>(createBill, schema);
+
+        const result = await billService.createBill(value);
+        res.status(201).send(result);
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function updateBill(req: Request, res: Response, next: NextFunction) {
+
+}
