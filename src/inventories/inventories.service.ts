@@ -9,8 +9,9 @@ const inventoryRepo = AppDataSource.getRepository(Inventory);
 
 export async function getInventories(filters: FilterPagination) {
     const query = buildPagination(Inventory, filters)
-    const users = await inventoryRepo.find(query);
-    return users;
+    const [result, total] = await inventoryRepo.findAndCount(query);
+    return { totalPage: total, inventories: result };
+
 }
 
 export async function getInventory(id: number) {
@@ -31,18 +32,14 @@ export async function createInventory(createInventoryDTO: CreateInventoryDTO) {
 }
 
 export async function updateInventory(id: number, updateInventoryDTO: UpdateInventoryDTO) {
-    let inventory = await inventoryRepo.findOneBy({
+    const inventory = await inventoryRepo.findOneBy({
         id: id
     });
 
     if (!inventory) {
         throw new BadRequest('Inventory not found');
     }
-    inventory = {
-        ...inventory,
-        ...updateInventoryDTO
-    }
-    await inventoryRepo.update(id, inventory);
+    await inventoryRepo.update(id, updateInventoryDTO);
     return inventory;
 }
 

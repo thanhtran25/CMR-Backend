@@ -7,9 +7,8 @@ import {
     DeleteDateColumn,
     ManyToOne,
     JoinColumn,
-    OneToOne,
     OneToMany,
-    Relation
+    Relation,
 
 } from 'typeorm';
 import { BillDetail } from '../bill_details/bill_details.entity';

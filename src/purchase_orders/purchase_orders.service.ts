@@ -5,7 +5,7 @@ import { FilterPagination } from '../core/interfaces/filter.interface';
 import { buildPagination } from '../core/utils/paginantion.util';
 import { ProductsInventories } from '../products_inventories/products_inventories.entity';
 import { PurchaseOrderDetail } from '../purchase_order_detail/purchase_order_detail.entity';
-import { createPurchaseOrderDTO } from './purchase_orders.dto';
+import { CreatePurchaseOrderDTO } from './purchase_orders.dto';
 import { PurchaseOrder } from './purchase_orders.entity';
 
 
@@ -13,8 +13,10 @@ const purchaseOrderRepo = AppDataSource.getRepository(PurchaseOrder);
 const productsInventoriesRepo = AppDataSource.getRepository(ProductsInventories);
 
 export async function getPurchaseOrders(filters: FilterPagination) {
-    const query = buildPagination(PurchaseOrder, filters)
-    const brands = await purchaseOrderRepo.find({
+    const query = buildPagination(PurchaseOrder, filters);
+    console.log(query);
+
+    const [result, total] = await purchaseOrderRepo.findAndCount({
         ...query,
         relations: {
             purchaseOrderDetails: {
@@ -22,11 +24,11 @@ export async function getPurchaseOrders(filters: FilterPagination) {
             }
         }
     });
-    return brands;
+    return { totalPage: total, purchaseOrders: result };
 }
 
 export async function getPurchaseOrder(id: number) {
-    const brand = await purchaseOrderRepo.findOne({
+    const purchaseOrder = await purchaseOrderRepo.findOne({
         where: {
             id: id,
         },
@@ -36,13 +38,13 @@ export async function getPurchaseOrder(id: number) {
             }
         }
     });
-    if (!brand) {
+    if (!purchaseOrder) {
         throw new BadRequest('Purchase Order not found');
     }
-    return brand;
+    return purchaseOrder;
 }
 
-export async function createPurchaseOrder(createPurchaseOrderDTO: createPurchaseOrderDTO) {
+export async function createPurchaseOrder(createPurchaseOrderDTO: CreatePurchaseOrderDTO) {
     const { inventoryId, details, ...purchaseOrder } = createPurchaseOrderDTO
     const newPurchaseOrder = new PurchaseOrder(purchaseOrder);
     const productIds = details.map((detail) => detail.productId);
@@ -91,8 +93,4 @@ export async function createPurchaseOrder(createPurchaseOrderDTO: createPurchase
         await transactionalEntityManager.insert(PurchaseOrderDetail, newDetails);
     })
     return newPurchaseOrder;
-}
-
-export async function updatePurchaseOrder() {
-
 }

@@ -9,8 +9,8 @@ const branchRepo = AppDataSource.getRepository(Brand);
 
 export async function getBrands(filters: FilterPagination) {
     const query = buildPagination(Brand, filters)
-    const brands = await branchRepo.find(query);
-    return brands;
+    const [result, total] = await branchRepo.findAndCount(query);
+    return { totalPage: total, brands: result };
 }
 
 export async function getBrand(id: number) {
@@ -37,18 +37,14 @@ export async function createBrand(createBranchDTO: CreateBranchDTO) {
 }
 
 export async function updateBrand(id: number, updateBranchDTO: UpdateBranchDTO) {
-    let brand = await branchRepo.findOneBy({
+    const brand = await branchRepo.findOneBy({
         id: id
     });
 
     if (!brand) {
         throw new BadRequest('Brand not found');
     }
-    brand = {
-        ...brand,
-        ...updateBranchDTO,
-    }
-    await branchRepo.update(id, brand);
+    await branchRepo.update(id, updateBranchDTO);
     return brand;
 }
 
