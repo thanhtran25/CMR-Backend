@@ -89,7 +89,12 @@ export async function updateBill(req: Request, res: Response, next: NextFunction
 
 export async function getHistory(req: Request, res: Response, next: NextFunction) {
     try {
-        const result = await billService.getHistory(+req.user.id);
+        const schema = Joi.object({
+            page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
+            limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
+        });
+        const { page, limit } = validate<FilterPagination>(req.query, schema);
+        const result = await billService.getHistory(+req.user.id, limit, page);
         return res.status(200).send(result);
 
     } catch (error) {

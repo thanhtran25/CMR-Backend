@@ -116,19 +116,22 @@ export async function updateBill(id: number, updateBillDTO: UpdateBillDTO) {
 
 }
 
-export async function getHistory(userId: number) {
+export async function getHistory(userId: number, limit: number, page: number) {
+    const skip = limit * (page - 1);
 
     const [result, total] = await billRepo.findAndCount({
         where: {
-            userId: userId
+            userId: userId,
         },
+        skip: skip,
+        take: limit,
         relations: {
             billDetails: {
                 product: true
             }
         }
     });
-    return { totalPage: Math.ceil(total / filters.limit), bills: result };
+    return { totalPage: Math.ceil(total / limit), bills: result };
 }
 
 async function getProductInventory(states: string, bill: Bill) {
