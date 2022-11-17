@@ -1,7 +1,17 @@
 {
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "execMap": {
+        "ts": "node --require @swc-node/register"
+    },
+    "ext": "js,json,ts",
+    "ignore": [
+        ".git",
+        "node_modules/**/node_modules"
+    ],
+    "restartable": "rs",
     "watch": [
         "src"
-    ],
-    "ext": "ts",
-    "exec": "ts-node src/index.ts"
+    ]
 }
