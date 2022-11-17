@@ -14,6 +14,7 @@ export async function getProducts(req: Request, res: Response, next: NextFunctio
             sort: Joi.string().allow(''),
             sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
             description: Joi.string().allow(''),
+            name: Joi.string().allow(''),
             brandId: Joi.number().allow(''),
             categoryId: Joi.number().allow(''),
             saleCodeId: Joi.number().allow(''),

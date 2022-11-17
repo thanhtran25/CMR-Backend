@@ -65,7 +65,7 @@ export class Bill {
 
     @ManyToOne(() => User, (user) => user.bills)
     @JoinColumn()
-    user: User;
+    user: Relation<User>;
 
     @Column({ nullable: true })
     userId: number;

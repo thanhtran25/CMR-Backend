@@ -28,6 +28,27 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
     }
 }
 
+export async function getLockedUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
+            limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
+            sort: Joi.string().allow(''),
+            sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
+            fullname: Joi.string().allow(''),
+            gender: Joi.string().valid(...Object.values(Gender)).allow(''),
+            address: Joi.string().allow(''),
+        });
+
+        const query: FilterPagination = validate<FilterPagination>(req.query, schema);
+        const result = await userService.getLockedUsers(query);
+        return res.status(200).send(result);
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
 export async function getUser(req: Request, res: Response, next: NextFunction) {
     try {
         const result = await userService.getUser(parseInt(req.params.id));
@@ -115,6 +136,16 @@ export async function changePosition(req: Request, res: Response, next: NextFunc
 
         await userService.changePosition(value);
         return res.status(200).send();
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function recoverUser(req: Request, res: Response, next: NextFunction) {
+    try {
+        await userService.recoverUser(parseInt(req.params.id))
+        return res.status(200).send();
+
     } catch (error) {
         return next(error);
     }

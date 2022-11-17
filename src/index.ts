@@ -24,7 +24,9 @@ import * as sendMailUtil from './core/utils/send-email.util';
 
 async function bootstrap() {
 
-    await sendMailUtil.verify()
+    if (process.env.NODE_ENV === 'production') {
+        await sendMailUtil.verify();
+    }
 
     const port: number = parseInt(process.env.SERVER_PORT || '3004', 10);
     const app = express();

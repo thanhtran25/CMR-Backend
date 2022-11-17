@@ -6,12 +6,28 @@ import { ROUNDS_NUMBER } from '../core/constant'
 import { ChangePositionDTO, ChangePasswordDTO, CreateUserDTO, UpdateUserDTO } from './users.dto';
 import { FilterPagination } from '../core/interfaces/filter.interface';
 import { buildPagination } from '../core/utils/paginantion.util';
+import { IsNull, Not } from 'typeorm';
 
 const userRepo = AppDataSource.getRepository(User);
 
 export async function getUsers(filters: FilterPagination) {
     const query = buildPagination(User, filters)
     const [result, total] = await userRepo.findAndCount(query);
+    return { totalPage: total, users: result };
+}
+
+export async function getLockedUsers(filters: FilterPagination) {
+    const { where, order, skip, take } = buildPagination(User, filters);
+    const [result, total] = await userRepo.findAndCount({
+        where: {
+            ...where,
+            deletedAt: Not(IsNull())
+        },
+        withDeleted: true,
+        order,
+        skip,
+        take
+    });
     return { totalPage: total, users: result };
 }
 
@@ -96,4 +112,19 @@ export async function changePosition(changePosition: ChangePositionDTO) {
     }
 
     await userRepo.update(user.id, { role: changePosition.role });
+}
+
+export async function recoverUser(id: number) {
+    const user = await userRepo.findOne({
+        where: {
+            id: id
+        },
+        withDeleted: true
+    });
+
+    if (!user) {
+        throw new BadRequest('User not found');
+    }
+
+    await userRepo.restore(id);
 }
