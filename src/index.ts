@@ -20,8 +20,12 @@ import purchaseOrderRouter from './purchase_orders/purchase_orders.router';
 import saleCodeRouter from './sale_codes/sale_codes.router';
 import billRouter from './bills/bills.router';
 import * as resUtil from './core/utils/res.util';
+import * as sendMailUtil from './core/utils/send-email.util';
 
 async function bootstrap() {
+
+    await sendMailUtil.verify()
+
     const port: number = parseInt(process.env.SERVER_PORT || '3004', 10);
     const app = express();
 
