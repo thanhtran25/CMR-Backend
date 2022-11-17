@@ -24,7 +24,7 @@ export async function getPurchaseOrders(filters: FilterPagination) {
             }
         }
     });
-    return { totalPage: total, purchaseOrders: result };
+    return { totalPage: Math.ceil(total / filters.limit), purchaseOrders: result };
 }
 
 export async function getPurchaseOrder(id: number) {

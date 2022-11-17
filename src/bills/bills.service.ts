@@ -28,7 +28,7 @@ export async function getBills(filters: FilterPagination) {
             }
         }
     });
-    return { totalPage: total, bills: result };
+    return { totalPage: Math.ceil(total / filters.limit), bills: result };
 }
 
 export async function getBill(id: number) {
@@ -114,6 +114,21 @@ export async function updateBill(id: number, updateBillDTO: UpdateBillDTO) {
         }
     })
 
+}
+
+export async function getHistory(userId: number) {
+
+    const [result, total] = await billRepo.findAndCount({
+        where: {
+            userId: userId
+        },
+        relations: {
+            billDetails: {
+                product: true
+            }
+        }
+    });
+    return { totalPage: Math.ceil(total / filters.limit), bills: result };
 }
 
 async function getProductInventory(states: string, bill: Bill) {

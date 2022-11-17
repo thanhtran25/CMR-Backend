@@ -14,7 +14,7 @@ export async function getSaleCodes(filters: FilterPagination) {
     const [result, total] = await saleCodeRepo.findAndCount({
         ...query,
     });
-    return { totalPage: total, saleCodes: result };
+    return { totalPage: Math.ceil(total / filters.limit), saleCodes: result };
 }
 
 export async function getSaleCode(id: number) {

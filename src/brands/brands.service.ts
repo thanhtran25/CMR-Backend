@@ -10,7 +10,7 @@ const branchRepo = AppDataSource.getRepository(Brand);
 export async function getBrands(filters: FilterPagination) {
     const query = buildPagination(Brand, filters)
     const [result, total] = await branchRepo.findAndCount(query);
-    return { totalPage: total, brands: result };
+    return { totalPage: Math.ceil(total / filters.limit), brands: result };
 }
 
 export async function getBrand(id: number) {

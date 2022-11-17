@@ -12,7 +12,7 @@ const productRepo = AppDataSource.getRepository(Product);
 export async function getProducts(filters: FilterPagination) {
     const query = buildPagination(Product, filters)
     const [result, total] = await productRepo.findAndCount(query);
-    return { totalPage: total, products: result };
+    return { totalPage: Math.ceil(total / filters.limit), products: result };
 }
 
 export async function getProduct(id: number) {

@@ -10,7 +10,7 @@ const inventoryRepo = AppDataSource.getRepository(Inventory);
 export async function getInventories(filters: FilterPagination) {
     const query = buildPagination(Inventory, filters)
     const [result, total] = await inventoryRepo.findAndCount(query);
-    return { totalPage: total, inventories: result };
+    return { totalPage: Math.ceil(total / filters.limit), inventories: result };
 
 }
 

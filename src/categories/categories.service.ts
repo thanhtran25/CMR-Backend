@@ -10,7 +10,7 @@ const categoryRepo = AppDataSource.getRepository(Category);
 export async function getCategories(filters: FilterPagination) {
     const query = buildPagination(Category, filters)
     const [result, total] = await categoryRepo.findAndCount(query);
-    return { totalPage: total, categories: result };
+    return { totalPage: Math.ceil(total / filters.limit), categories: result };
 }
 
 export async function getCategory(id: number) {

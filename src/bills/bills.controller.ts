@@ -15,6 +15,7 @@ export async function getBills(req: Request, res: Response, next: NextFunction) 
             limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
             sort: Joi.string().allow(''),
             sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
+            numberPhone: Joi.string().allow('')
         });
 
         const query: FilterPagination = validate<FilterPagination>(req.query, schema);
@@ -81,6 +82,16 @@ export async function updateBill(req: Request, res: Response, next: NextFunction
 
         await billService.updateBill(+req.params.id, value);
         res.status(200).send();
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function getHistory(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await billService.getHistory(+req.user.id);
+        return res.status(200).send(result);
+
     } catch (error) {
         return next(error);
     }
