@@ -92,13 +92,10 @@ export async function getUserFromCode(req: Request, res: Response, next: NextFun
 
         const data = await authService.getGoogleUser(code)
         res.cookie('Token', data.accessToken, {
-            maxAge: +process.env.JWT_EXPIRATION + 60000,
         })
         res.cookie('user', JSON.stringify(data.information), {
-            maxAge: +process.env.JWT_EXPIRATION + 60000,
         })
         res.cookie('hasPassword', data.hasPassword, {
-            maxAge: +process.env.JWT_EXPIRATION + 60000,
         })
         res.redirect(process.env.WEB_URI)
     } catch (error) {
