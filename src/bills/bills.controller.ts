@@ -72,5 +72,16 @@ export async function createBill(req: Request, res: Response, next: NextFunction
 }
 
 export async function updateBill(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            states: Joi.string().required(),
+            status: Joi.string().default(BillStatus.UNPAID)
+        })
+        const value = validate<UpdateBillDTO>(req.body, schema);
 
+        await billService.updateBill(+req.params.id, value);
+        res.status(200).send();
+    } catch (error) {
+        return next(error);
+    }
 }

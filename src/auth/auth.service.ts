@@ -72,6 +72,8 @@ export async function forgotPassword(forgotPasswordDTO: ForgotPasswordDTO) {
         }
     })
 
+    console.log(token);
+
     if (!token) {
         token = new Token({
             user: user,
