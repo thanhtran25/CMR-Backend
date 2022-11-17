@@ -13,7 +13,7 @@ const userRepo = AppDataSource.getRepository(User);
 export async function getUsers(filters: FilterPagination) {
     const query = buildPagination(User, filters)
     const [result, total] = await userRepo.findAndCount(query);
-    return { totalPage: total, users: result };
+    return { totalPage: Math.ceil(total / filters.limit), users: result };
 }
 
 export async function getLockedUsers(filters: FilterPagination) {
@@ -28,7 +28,7 @@ export async function getLockedUsers(filters: FilterPagination) {
         skip,
         take
     });
-    return { totalPage: total, users: result };
+    return { totalPage: Math.ceil(total / filters.limit), users: result };
 }
 
 export async function getUser(id: number) {

@@ -10,7 +10,7 @@ const supplierRepo = AppDataSource.getRepository(Supplier);
 export async function getSuppliers(filters: FilterPagination) {
     const query = buildPagination(Supplier, filters)
     const [result, total] = await supplierRepo.findAndCount(query);
-    return { totalPage: total, suppliers: result };
+    return { totalPage: Math.ceil(total / filters.limit), suppliers: result };
 }
 
 export async function getSupplier(id: number) {
