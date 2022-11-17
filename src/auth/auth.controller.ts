@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
-import { Gender, Roles } from '../core/enum';
+import { Gender } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as authService from './auth.service'
 import { ForgotPasswordDTO, LoginDTO, ResetPasswordDTO, SignupDTO } from './auth.dto';
@@ -72,6 +72,35 @@ export async function resetPassword(req: Request, res: Response, next: NextFunct
         await authService.resetPassword(value);
         return res.status(200).send();
 
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function getGoogleAuthURL(req: Request, res: Response, next: NextFunction) {
+    const loginUrl = authService.getGoogleAuthURL()
+    res.redirect(loginUrl)
+}
+
+export async function getUserFromCode(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            code: Joi.string().required(),
+        });
+
+        const { code } = validate(req.query, schema, { allowUnknown: true });
+
+        const data = await authService.getGoogleUser(code)
+        res.cookie('Token', data.accessToken, {
+            maxAge: +process.env.JWT_EXPIRATION + 60000,
+        })
+        res.cookie('user', JSON.stringify(data.information), {
+            maxAge: +process.env.JWT_EXPIRATION + 60000,
+        })
+        res.cookie('hasPassword', data.hasPassword, {
+            maxAge: +process.env.JWT_EXPIRATION + 60000,
+        })
+        res.redirect(process.env.WEB_URI)
     } catch (error) {
         return next(error);
     }

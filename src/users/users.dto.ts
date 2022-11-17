@@ -26,6 +26,10 @@ export class ChangePasswordDTO {
     newPassword: string;
 }
 
+export class GoogleChangePasswordDTO {
+    newPassword: string;
+}
+
 export class ChangePositionDTO {
     id: number
     role: Roles;

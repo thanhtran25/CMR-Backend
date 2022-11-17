@@ -32,8 +32,11 @@ export async function getLockedUsers(filters: FilterPagination) {
 }
 
 export async function getUser(id: number) {
-    const user = await userRepo.findOneBy({
-        id: id
+    const user = await userRepo.findOne({
+        where: {
+            id: id
+        },
+        select: ['address', 'birthday', 'createdAt', 'deletedAt', 'updatedAt', 'email', 'fullname', 'gender', 'hashedPassword', 'id', 'numberPhone', 'role']
     });
     if (!user) {
         throw new BadRequest('User not found');
@@ -90,11 +93,14 @@ export async function changePassword(changePassword: ChangePasswordDTO, email: s
         select: ['hashedPassword', 'id']
     });
 
-    const isValid = await bcrypt.compare(changePassword.currentPassword, user.hashedPassword);
+    if (user.hashedPassword) {
+        const isValid = await bcrypt.compare(changePassword.currentPassword, user.hashedPassword);
 
-    if (!isValid) {
-        throw new Unauthorized('Current password is incorrect');
+        if (!isValid) {
+            throw new Unauthorized('Current password is incorrect');
+        }
     }
+
     user.hashedPassword = await bcrypt.hash(changePassword.newPassword, ROUNDS_NUMBER);
 
     await userRepo.update(user.id, user);
