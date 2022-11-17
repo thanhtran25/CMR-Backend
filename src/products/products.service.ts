@@ -11,18 +11,44 @@ const productRepo = AppDataSource.getRepository(Product);
 
 export async function getProducts(filters: FilterPagination) {
     const query = buildPagination(Product, filters)
-    const [result, total] = await productRepo.findAndCount(query);
-    return { totalPage: Math.ceil(total / filters.limit), products: result };
+    const [result, total] = await productRepo.findAndCount({
+        ...query,
+        relations: {
+            saleCode: true
+        }
+    });
+    const products = result.map((product) => {
+        let percent: number = 0;
+        if (product.saleCode) {
+            percent = product.saleCode.percent;
+        }
+        delete product.saleCode;
+        return {
+            ...product,
+            percent
+        }
+    })
+    return { totalPage: Math.ceil(total / filters.limit), products: products };
 }
 
 export async function getProduct(id: number) {
-    const product = await productRepo.findOneBy({
-        id: id
+    const product = await productRepo.findOne({
+        where: {
+            id: id
+        },
+        relations: {
+            saleCode: true
+        }
     });
     if (!product) {
         throw new BadRequest('Product not found');
     }
-    return product;
+    let percent: number = 0;
+    if (product.saleCode) {
+        percent = product.saleCode.percent;
+    }
+    delete product.saleCode;
+    return { ...product, percent };
 }
 
 export async function createProduct(createProductDTO: CreateProductDTO) {
