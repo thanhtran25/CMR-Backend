@@ -193,14 +193,13 @@ export async function getGoogleUser(code: string) {
     let user = await userRepo.findOne({
         where: {
             email: googleUser.email,
-        }
+        },
+        select: ['address', 'birthday', 'createdAt', 'deletedAt', 'updatedAt', 'email', 'fullname', 'gender', 'hashedPassword', 'id', 'numberPhone', 'role']
     })
 
     let hasPassword = true;
     // Create local user if not existed
     if (!user) {
-        hasPassword = false;
-
         user = new User({
             email: googleUser.email,
             fullname: googleUser.name,
@@ -210,6 +209,9 @@ export async function getGoogleUser(code: string) {
         await userRepo.save(user);
     }
 
+    if (!user.hashedPassword) {
+        hasPassword = false;
+    }
 
     const payload = { id: user.id, email: user.email, role: user.role }
 
