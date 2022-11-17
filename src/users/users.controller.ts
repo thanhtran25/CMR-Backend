@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Gender, Roles } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as userService from './users.service';
-import { ChangePasswordDTO, ChangePositionDTO, CreateUserDTO, UpdateUserDTO } from './users.dto';
+import { ChangePasswordDTO, ChangePositionDTO, CreateUserDTO, GoogleChangePasswordDTO, UpdateUserDTO } from './users.dto';
 import { PAGINATION } from '../core/constant';
 import { FilterPagination } from '../core/interfaces/filter.interface';
 
@@ -114,7 +114,7 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
 export async function changePassword(req: Request, res: Response, next: NextFunction) {
     try {
         const schema = Joi.object({
-            currentPassword: Joi.string().min(8).required(),
+            currentPassword: Joi.string().min(8).optional(),
             newPassword: Joi.string().min(8).required()
         });
 
@@ -145,6 +145,16 @@ export async function recoverUser(req: Request, res: Response, next: NextFunctio
     try {
         await userService.recoverUser(parseInt(req.params.id))
         return res.status(200).send();
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function getMe(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await userService.getUser(req.user.id);
+        return res.status(200).send(result);
 
     } catch (error) {
         return next(error);
