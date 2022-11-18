@@ -6,6 +6,8 @@ import { Product } from '../products/products.entity';
 import { CreateProductDTO, UpdateProductDTO } from './products.dto';
 import { FilterPagination } from '../core/interfaces/filter.interface';
 import { buildPagination } from '../core/utils/paginantion.util';
+import { query } from "express";
+import { IsNull, Not } from "typeorm";
 
 const productRepo = AppDataSource.getRepository(Product);
 
@@ -13,6 +15,33 @@ export async function getProducts(filters: FilterPagination) {
     const query = buildPagination(Product, filters)
     const [result, total] = await productRepo.findAndCount({
         ...query,
+        relations: {
+            saleCode: true
+        }
+    });
+    const products = result.map((product) => {
+        let percent: number = 0;
+        if (product.saleCode) {
+            percent = product.saleCode.percent;
+        }
+        delete product.saleCode;
+        return {
+            ...product,
+            percent
+        }
+    })
+    return { totalPage: Math.ceil(total / filters.limit), products: products };
+}
+
+export async function getSaleProducts(filters: FilterPagination) {
+    const { where, ...query } = buildPagination(Product, filters);
+
+    const [result, total] = await productRepo.findAndCount({
+        ...query,
+        where: {
+            ...where,
+            saleCodeId: Not(IsNull())
+        },
         relations: {
             saleCode: true
         }

@@ -17,11 +17,33 @@ export async function getProducts(req: Request, res: Response, next: NextFunctio
             name: Joi.string().allow(''),
             brandId: Joi.number().allow(''),
             categoryId: Joi.number().allow(''),
-            saleCodeId: Joi.number().allow(''),
         });
 
         const query: FilterPagination = validate<FilterPagination>(req.query, schema);
         const result = await productService.getProducts(query);
+        return res.status(200).send(result);
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function getSaleProducts(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
+            limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
+            sort: Joi.string().allow(''),
+            sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
+            description: Joi.string().allow(''),
+            name: Joi.string().allow(''),
+            brandId: Joi.number().allow(''),
+            categoryId: Joi.number().allow(''),
+        });
+
+        const query: FilterPagination = validate<FilterPagination>(req.query, schema);
+
+        const result = await productService.getSaleProducts(query);
         return res.status(200).send(result);
 
     } catch (error) {
