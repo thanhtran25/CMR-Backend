@@ -16,16 +16,16 @@ import { Roles } from '../core/enum';
 
 const router = express.Router();
 
-router.get('/', getUsers);
+router.get('/', authorization(Roles.ADMIN, Roles.MANAGER), getUsers);
 router.get('/me', authorization(), getMe);
-router.get('/locked', getLockedUsers);
+router.get('/locked', authorization(Roles.ADMIN), getLockedUsers);
 router.post('/', authorization(Roles.ADMIN, Roles.MANAGER), createUser);
 router.put('/me/password', authorization(), changePassword);
 
-router.get('/:id', getUser);
+router.get('/:id', authorization(Roles.ADMIN, Roles.MANAGER), getUser);
 router.put('/:id', authorization(Roles.ADMIN, Roles.MANAGER), updateUser);
-router.put('/locked/:id', authorization(Roles.ADMIN, Roles.MANAGER), recoverUser);
-router.delete('/:id', authorization(Roles.ADMIN, Roles.MANAGER), deleteUser);
+router.put('/locked/:id', authorization(Roles.ADMIN), recoverUser);
+router.delete('/:id', authorization(Roles.ADMIN), deleteUser);
 router.put('/position/:id', authorization(Roles.ADMIN), changePosition);
 
 export default router;

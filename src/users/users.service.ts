@@ -36,7 +36,7 @@ export async function getUser(id: number) {
         where: {
             id: id
         },
-        select: ['address', 'birthday', 'createdAt', 'deletedAt', 'updatedAt', 'email', 'fullname', 'gender', 'hashedPassword', 'id', 'numberPhone', 'role']
+        select: ['address', 'birthday', 'createdAt', 'deletedAt', 'updatedAt', 'email', 'fullname', 'gender', 'id', 'numberPhone', 'role']
     });
     if (!user) {
         throw new BadRequest('User not found');
