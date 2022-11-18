@@ -11,11 +11,11 @@ import { Roles } from '../core/enum';
 
 const router = express.Router();
 
-router.get('/', getBills);
+router.get('/', authorization(Roles.MANAGER, Roles.STAFF), getBills);
 router.get('/history', authorization(Roles.CUSTOMER), getHistory);
 router.post('/', createBill);
 
-router.get('/:id', getBill);
-router.put('/:id', authorization(Roles.CUSTOMER), updateBill)
+router.get('/:id', authorization(Roles.MANAGER, Roles.STAFF, Roles.CUSTOMER), getBill);
+router.put('/:id', authorization(Roles.MANAGER, Roles.STAFF), updateBill)
 
 export default router;
