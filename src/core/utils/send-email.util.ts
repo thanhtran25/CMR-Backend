@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as nodemailer from 'nodemailer';
 import * as handlebars from 'handlebars';
 
-const TEMPLATE_DIR = '../email_templates'
+const TEMPLATE_DIR = '../../../email_templates'
 
 let transporter: nodemailer.Transporter
 
