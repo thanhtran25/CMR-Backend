@@ -11,10 +11,10 @@ import { Roles } from '../core/enum';
 
 const router = express.Router();
 
-router.get('/', getSuppliers);
+router.get('/', authorization(Roles.MANAGER, Roles.STAFF), getSuppliers);
 router.post('/', authorization(Roles.MANAGER, Roles.STAFF), createSupplier);
 
-router.get('/:id', getSupplier);
+router.get('/:id', authorization(Roles.MANAGER, Roles.STAFF), getSupplier);
 router.put('/:id', authorization(Roles.MANAGER, Roles.STAFF), updateSupplier);
 router.delete('/:id', authorization(Roles.MANAGER, Roles.STAFF), deleteSupplier);
 
