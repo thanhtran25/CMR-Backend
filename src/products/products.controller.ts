@@ -74,6 +74,8 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
             warrantyPeriod: Joi.number().required()
         });
 
+        console.log('image', req.files);
+
         const { images, amount, ...value } = validate({
             ...req.body,
             images: Array.isArray(req.files) && req.files.map(file => file.filename)

@@ -25,3 +25,12 @@ export class ResetPasswordDTO {
     password: string;
     token: string;
 }
+
+export class ConfirmAccountDTO {
+    email: string;
+    otp: number;
+}
+
+export class ResendOTPDTO {
+    email: string;
+}

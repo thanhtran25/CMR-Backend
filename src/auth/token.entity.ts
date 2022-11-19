@@ -1,3 +1,4 @@
+import { TokenType } from '../core/enum';
 import {
     Entity,
     Column,
@@ -5,6 +6,7 @@ import {
     CreateDateColumn,
     Relation,
     ManyToOne,
+    JoinColumn,
 } from 'typeorm';
 import { User } from '../users/users.entity';
 
@@ -25,9 +27,18 @@ export class Token {
     @Column()
     expiredAt: Date;
 
+    @Column({
+        type: 'enum',
+        enum: TokenType
+    })
+    type: TokenType;
+
     @CreateDateColumn()
     createdAt: Date;
 
     @ManyToOne(() => User, (user) => user.tokens)
     user: Relation<User>;
+
+    @Column({ nullable: true })
+    userId: number;
 }

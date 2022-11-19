@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Gender } from '../core/enum';
 import { validate } from '../core/utils/validate.util';
 import * as authService from './auth.service'
-import { ForgotPasswordDTO, LoginDTO, ResetPasswordDTO, SignupDTO } from './auth.dto';
+import { ConfirmAccountDTO, ForgotPasswordDTO, LoginDTO, ResendOTPDTO, ResetPasswordDTO, SignupDTO } from './auth.dto';
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
@@ -102,3 +102,36 @@ export async function getUserFromCode(req: Request, res: Response, next: NextFun
         return next(error);
     }
 }
+
+export async function confirmAccount(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            email: Joi.string().required(),
+            otp: Joi.number().required(),
+        });
+
+        const value = validate<ConfirmAccountDTO>(req.body, schema);
+
+        await authService.confirmAccount(value)
+        res.status(200).send();
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function resendOTP(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            email: Joi.string().required(),
+        });
+
+        const value = validate<ResendOTPDTO>(req.body, schema);
+
+        await authService.resendOTP(value)
+        res.status(200).send();
+    } catch (error) {
+        return next(error);
+    }
+}
+
+

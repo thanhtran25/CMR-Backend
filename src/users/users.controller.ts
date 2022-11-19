@@ -17,6 +17,7 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
             fullname: Joi.string().allow(''),
             gender: Joi.string().valid(...Object.values(Gender)).allow(''),
             address: Joi.string().allow(''),
+            role: Joi.string().valid(...Object.values(Roles)).allow('')
         });
 
         const query: FilterPagination = validate<FilterPagination>(req.query, schema);
