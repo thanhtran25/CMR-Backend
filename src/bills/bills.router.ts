@@ -3,8 +3,10 @@ import {
     getBills,
     getBill,
     createBill,
-    updateBill,
-    getHistory
+    acceptBill,
+    getHistory,
+    getShippingFee,
+    shipping
 } from './bills.controller';
 import { authorization } from '../core/middleware/auth.middleware'
 import { Roles } from '../core/enum';
@@ -16,6 +18,9 @@ router.get('/history', authorization(Roles.CUSTOMER), getHistory);
 router.post('/', createBill);
 
 router.get('/:id', authorization(Roles.MANAGER, Roles.STAFF, Roles.CUSTOMER), getBill);
-router.put('/:id', authorization(Roles.MANAGER, Roles.STAFF), updateBill)
+router.put('/accept/:id', authorization(Roles.MANAGER, Roles.STAFF), acceptBill);
+router.put('/ship/:id', authorization(Roles.SHIPPER), shipping)
+
+router.post('/shipping', getShippingFee)
 
 export default router;

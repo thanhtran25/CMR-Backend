@@ -20,3 +20,9 @@ export class UpdateBillDTO {
     states: OrderStates;
     status: BillStatus;
 }
+
+export class ShippingDTO {
+    states: OrderStates;
+    status: BillStatus;
+    shipperId: number;
+}
