@@ -84,4 +84,7 @@ export class User {
 
     @OneToMany(() => Token, (token) => token.user)
     tokens: Relation<Token>[];
+
+    @OneToMany(() => Bill, (bill) => bill.shipper)
+    orders: Relation<Bill>[];
 }

@@ -72,4 +72,11 @@ export class Bill {
 
     @OneToMany(() => BillDetail, (billDetail) => billDetail.bill, { nullable: false })
     billDetails: Relation<BillDetail>[];
+
+    @ManyToOne(() => User, (user) => user.orders)
+    @JoinColumn()
+    shipper: Relation<User>;
+
+    @Column({ nullable: true })
+    shipperId: number;
 } 

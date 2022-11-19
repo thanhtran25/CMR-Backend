@@ -4,7 +4,7 @@ import { validate } from '../core/utils/validate.util';
 import { PAGINATION } from '../core/constant';
 import { FilterPagination } from '../core/interfaces/filter.interface';
 import * as billService from './bills.service';
-import { CreateBillDTO, UpdateBillDTO } from './bills.dto';
+import { CreateBillDTO, ShippingDTO, UpdateBillDTO } from './bills.dto';
 import { BillStatus, OrderStates } from '../core/enum';
 import { userSignin } from '../core/utils/user-signin.util';
 
@@ -72,7 +72,7 @@ export async function createBill(req: Request, res: Response, next: NextFunction
     }
 }
 
-export async function updateBill(req: Request, res: Response, next: NextFunction) {
+export async function acceptBill(req: Request, res: Response, next: NextFunction) {
     try {
         const schema = Joi.object({
             states: Joi.string().required(),
@@ -80,7 +80,23 @@ export async function updateBill(req: Request, res: Response, next: NextFunction
         })
         const value = validate<UpdateBillDTO>(req.body, schema);
 
-        await billService.updateBill(+req.params.id, value);
+        await billService.acceptBill(+req.params.id, value);
+        res.status(200).send();
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function shipping(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            states: Joi.string().required(),
+            status: Joi.string().default(BillStatus.UNPAID),
+            shipperId: Joi.number().required()
+        })
+        const value = validate<ShippingDTO>({ ...req.body, shipperId: req.user.id }, schema);
+
+        await billService.acceptBill(+req.params.id, value);
         res.status(200).send();
     } catch (error) {
         return next(error);
@@ -96,6 +112,22 @@ export async function getHistory(req: Request, res: Response, next: NextFunction
         const { page, limit } = validate<FilterPagination>(req.query, schema);
         const result = await billService.getHistory(+req.user.id, limit, page);
         return res.status(200).send(result);
+
+    } catch (error) {
+        return next(error);
+    }
+}
+export async function getShippingFee(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            address: Joi.string(),
+        });
+
+        const { address } = validate(req.body, schema);
+        console.log(address);
+
+        const result = await billService.getShippingFee(address);
+        return res.status(200).send({ result });
 
     } catch (error) {
         return next(error);
