@@ -8,11 +8,12 @@ import { AppDataSource } from '../core/database';
 import { User } from '../users/users.entity';
 import { Token } from './token.entity';
 import { ROUNDS_NUMBER } from '../core/constant'
-import { ForgotPasswordDTO, ResetPasswordDTO, SignupDTO } from './auth.dto';
+import { ConfirmAccountDTO, ForgotPasswordDTO, ResendOTPDTO, ResetPasswordDTO, SignupDTO } from './auth.dto';
 import { MoreThan } from 'typeorm';
 import { randomBytes } from 'crypto';
 import { sendEmail } from '../core/utils/send-email.util';
 import { GoogleUser } from 'src/core/interfaces/google-user.interface';
+import { TokenType } from '../core/enum';
 
 const userRepo = AppDataSource.getRepository(User);
 const tokenRepo = AppDataSource.getRepository(Token);
@@ -29,13 +30,30 @@ export async function signup(signupDTO: SignupDTO) {
     newUser.hashedPassword = await bcrypt.hash(signupDTO.password, ROUNDS_NUMBER);
     await userRepo.save(newUser);
     delete newUser.hashedPassword;
+
+    const newOTP = generateOTP();
+
+    const verifyToken = new Token({
+        user: newUser,
+        token: crypto.createHash('sha256').update(newOTP).digest('hex'),
+        expiredAt: new Date(Date.now() + +process.env.EXPIRED_VERIFY_ACCOUNT_TOKEN),
+        type: TokenType.SIGNUP
+    });
+    await tokenRepo.save(verifyToken);
+    sendEmail({
+        email: newUser.email,
+        subject: "Goldduck Camera - Confirm Account",
+        template: 'send-otp',
+        context: { newOTP }
+    }).catch(error => console.log(error));
     return newUser;
 }
 
 export async function signin(email: string, password: string) {
     const user = await userRepo.findOne({
         where: {
-            email: email
+            email: email,
+            verify: true
         },
         select: ['address', 'birthday', 'createdAt', 'deletedAt', 'updatedAt', 'email', 'fullname', 'gender', 'hashedPassword', 'id', 'numberPhone', 'role']
     });
@@ -66,7 +84,7 @@ export async function forgotPassword(forgotPasswordDTO: ForgotPasswordDTO) {
     });
 
     if (!user) {
-        throw new Unauthorized('User with given email does not exist');
+        throw new BadRequest('User with given email does not exist');
     }
 
     let token = await tokenRepo.findOne({
@@ -76,13 +94,12 @@ export async function forgotPassword(forgotPasswordDTO: ForgotPasswordDTO) {
         }
     })
 
-    console.log(token);
-
     if (!token) {
         token = new Token({
             user: user,
             token: randomBytes(32).toString("hex"),
-            expiredAt: new Date(Date.now() + +process.env.EXPIRED_RESET_PASSWORD_TOKEN)
+            expiredAt: new Date(Date.now() + +process.env.EXPIRED_RESET_PASSWORD_TOKEN),
+            type: TokenType.FORGOT_PASSWORD
         });
         await tokenRepo.save(token);
     }
@@ -112,7 +129,8 @@ export async function resetPassword(resetPasswordDTO: ResetPasswordDTO) {
         where: {
             user: user,
             token: resetPasswordDTO.token,
-            expiredAt: MoreThan(new Date())
+            expiredAt: MoreThan(new Date()),
+            type: TokenType.FORGOT_PASSWORD
         }
     })
 
@@ -123,6 +141,37 @@ export async function resetPassword(resetPasswordDTO: ResetPasswordDTO) {
     user.hashedPassword = await bcrypt.hash(resetPasswordDTO.password, ROUNDS_NUMBER);
     await userRepo.save(user);
     await tokenRepo.delete(token.id);
+}
+
+export async function confirmAccount(confirmAccountDTO: ConfirmAccountDTO) {
+    const user = await userRepo.findOne({
+        where: {
+            email: confirmAccountDTO.email
+        }
+    });
+
+    if (!user) {
+        throw new BadRequest('Invalid link or expired');
+    }
+
+    const otpHash = crypto.createHash('sha256').update(confirmAccountDTO.otp.toString()).digest('hex');
+
+    const confirmToken = await tokenRepo.findOne({
+        where: {
+            userId: user.id,
+            token: otpHash,
+            expiredAt: MoreThan(new Date()),
+            type: TokenType.SIGNUP
+        }
+    })
+
+    if (!confirmToken) {
+        throw new BadRequest('Invalid link or expired');
+    }
+
+    user.verify = true;
+    await userRepo.save(user);
+    await tokenRepo.delete(confirmToken.id);
 }
 
 export function getGoogleAuthURL() {
@@ -220,4 +269,53 @@ export async function getGoogleUser(code: string) {
     const { hashedPassword, ...information } = user;
 
     return { information, accessToken, hasPassword };
+}
+
+function generateOTP() {
+    var digits = '0123456789';
+    let OTP = '';
+    for (let i = 0; i < 6; i++) {
+        OTP += digits[Math.floor(Math.random() * 10)];
+    }
+    return OTP;
+}
+
+export async function resendOTP(resendDTO: ResendOTPDTO) {
+    const user = await userRepo.findOneBy({
+        email: resendDTO.email
+    });
+    if (!user) {
+        throw new BadRequest('User with given email does not exist');
+    }
+
+    const newOTP = generateOTP();
+
+    const verifyToken = new Token({
+        user: user,
+        token: crypto.createHash('sha256').update(newOTP).digest('hex'),
+        expiredAt: new Date(Date.now() + +process.env.EXPIRED_VERIFY_ACCOUNT_TOKEN),
+        type: TokenType.SIGNUP
+    });
+
+    let currentToken = await tokenRepo.findOne({
+        where: {
+            userId: user.id,
+            expiredAt: MoreThan(new Date()),
+            type: TokenType.SIGNUP
+        }
+    });
+
+    if (!currentToken) {
+        throw new BadRequest('Verified account');
+    }
+
+    await tokenRepo.delete(currentToken.id);
+
+    await tokenRepo.save(verifyToken);
+    sendEmail({
+        email: user.email,
+        subject: "Goldduck Camera - Confirm Account",
+        template: 'send-otp',
+        context: { newOTP }
+    }).catch(error => console.log(error));
 }

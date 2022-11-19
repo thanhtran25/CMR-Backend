@@ -30,7 +30,12 @@ export async function getSaleCodes(req: Request, res: Response, next: NextFuncti
 
 export async function getSaleCode(req: Request, res: Response, next: NextFunction) {
     try {
-        const result = await saleCodeService.getSaleCode(parseInt(req.params.id));
+        const schema = Joi.object({
+            id: Joi.number().min(1).required(),
+        });
+        const { id } = validate(req.params, schema);
+
+        const result = await saleCodeService.getSaleCode(id);
         return res.status(200).send(result);
 
     } catch (error) {
