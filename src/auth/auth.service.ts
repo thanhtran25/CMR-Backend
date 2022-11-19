@@ -3,6 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import * as qs from 'qs';
 import * as crypto from 'crypto';
+import * as otpGenerator from 'otp-generator';
 import axios from 'axios';
 import { AppDataSource } from '../core/database';
 import { User } from '../users/users.entity';
@@ -272,12 +273,12 @@ export async function getGoogleUser(code: string) {
 }
 
 function generateOTP() {
-    var digits = '0123456789';
-    let OTP = '';
-    for (let i = 0; i < 6; i++) {
-        OTP += digits[Math.floor(Math.random() * 10)];
-    }
-    return OTP;
+    return otpGenerator.generate(6, {
+        digits: true,
+        upperCaseAlphabets: false,
+        specialChars: false,
+        lowerCaseAlphabets: false
+    });
 }
 
 export async function resendOTP(resendDTO: ResendOTPDTO) {

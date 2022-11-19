@@ -39,6 +39,7 @@
     "multer": "^1.4.5-lts.1",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.8.0",
+    "otp-generator": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.10",
     "typeorm-naming-strategies": "^4.1.0",
@@ -57,6 +58,7 @@
     "@types/multer": "^1.4.7",
     "@types/node": "^18.11.0",
     "@types/nodemailer": "^6.4.6",
+    "@types/otp-generator": "^4.0.0",
     "nodemon": "^2.0.20",
     "regenerator-runtime": "^0.13.10",
     "ts-node": "^10.9.1"
