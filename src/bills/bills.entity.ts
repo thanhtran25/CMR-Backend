@@ -79,4 +79,7 @@ export class Bill {
 
     @Column({ nullable: true })
     shipperId: number;
+
+    @Column()
+    shippingFee: number;
 } 

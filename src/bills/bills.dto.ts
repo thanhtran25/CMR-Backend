@@ -13,6 +13,7 @@ export class CreateBillDTO {
     numberPhone: string;
     states: OrderStates;
     status: BillStatus;
+    shippingFee: number;
     details: BillDetailDTO[];
 }
 

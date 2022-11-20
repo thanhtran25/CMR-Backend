@@ -47,6 +47,7 @@ export async function createBill(req: Request, res: Response, next: NextFunction
             numberPhone: Joi.string().min(10).max(11).required(),
             states: Joi.string().default(OrderStates.WAITING),
             status: Joi.string().default(BillStatus.UNPAID),
+            shippingFee: Joi.number().required(),
             details: Joi.array().items({
                 count: Joi.number().required(),
                 price: Joi.number().required(),
