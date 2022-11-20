@@ -33,6 +33,7 @@ export async function signup(signupDTO: SignupDTO) {
     delete newUser.hashedPassword;
 
     const newOTP = generateOTP();
+    const otpLink = `${process.env.WEB_OTP_URL}/${signupDTO.email}`;
 
     const verifyToken = new Token({
         user: newUser,
@@ -45,7 +46,7 @@ export async function signup(signupDTO: SignupDTO) {
         email: newUser.email,
         subject: "Goldduck Camera - Confirm Account",
         template: 'send-otp',
-        context: { newOTP }
+        context: { newOTP, otpLink }
     }).catch(error => console.log(error));
     return newUser;
 }
