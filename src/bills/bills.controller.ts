@@ -58,16 +58,16 @@ export async function createBill(req: Request, res: Response, next: NextFunction
         let createBill = {
             ...req.body
         };
-        const user = userSignin(req, res, next);
-        if (user) {
-            createBill.userId = user.id;
+
+        if (req.user) {
+            createBill.userId = req.user.id;
         }
 
         const value = validate<CreateBillDTO>(createBill, schema);
 
         const result = await billService.createBill(value);
-        res.status(201).send(result);
 
+        return res.status(201).send(result);
     } catch (error) {
         return next(error);
     }

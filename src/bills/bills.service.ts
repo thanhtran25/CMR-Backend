@@ -65,6 +65,7 @@ export async function createBill(createBillDTO: CreateBillDTO) {
         const newDetails = AppDataSource.getRepository(BillDetail).create(billDetails);
         await transactionalEntityManager.insert(BillDetail, newDetails);
     })
+
     return newBill;
 }
 
@@ -226,7 +227,7 @@ export async function getShippingFee(address: string) {
         ;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = Math.round(R * c * 100) / 100; // Distance in km
-    const shipping = shippingFee(d);
+    const shipping = calculateShippingFee(d);
     return { distance: d, shippingFee: shipping };
 }
 
@@ -234,7 +235,7 @@ function deg2rad(deg: number) {
     return deg * (Math.PI / 180)
 }
 
-function shippingFee(distance: number) {
+function calculateShippingFee(distance: number) {
     if (distance <= 5) {
         return 15000;
     }

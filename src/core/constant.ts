@@ -5,3 +5,5 @@ export const PAGINATION = {
     DEFAULT_PAGE_SIZE: parseInt(process.env.PAGE_SIZE || '2', 10),
     MAX_PAGE_SIZE: 50,
 };
+
+export const ANONYMOUS_USER = 'Anonymous'
