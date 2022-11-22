@@ -15,7 +15,7 @@ import { ANONYMOUS_USER } from '../core/constant';
 const router = express.Router();
 
 router.get('/', authorization(Roles.MANAGER, Roles.STAFF), getBills);
-router.post('/', authorization(ANONYMOUS_USER), createBill);
+router.post('/', authorization(ANONYMOUS_USER, Roles.CUSTOMER), createBill);
 router.post('/shipping', getShippingFee)
 router.get('/history', authorization(Roles.CUSTOMER), getHistory);
 
