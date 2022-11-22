@@ -7,13 +7,13 @@ import { ANONYMOUS_USER } from '../constant';
 export function authorization(...roles: string[]) {
     return function (req: Request, res: Response, next: NextFunction) {
         try {
+            const token = req.headers.authorization;
 
-            if (roles.includes(ANONYMOUS_USER)) {
+            if (roles.includes(ANONYMOUS_USER) && !token) {
                 req.user = null
                 return next()
             }
 
-            const token = req.headers.authorization;
             if (!token || !token.startsWith('Bearer')) {
                 throw new Unauthorized('Token schema is invalid or missing');
             };
