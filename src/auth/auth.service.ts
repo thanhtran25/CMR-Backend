@@ -13,7 +13,7 @@ import { ConfirmAccountDTO, ForgotPasswordDTO, ResendOTPDTO, ResetPasswordDTO, S
 import { MoreThan } from 'typeorm';
 import { randomBytes } from 'crypto';
 import { sendEmail } from '../core/utils/send-email.util';
-import { GoogleUser } from 'src/core/interfaces/google-user.interface';
+import { GoogleUser } from '../core/interfaces/google-user.interface';
 import { TokenType } from '../core/enum';
 
 const userRepo = AppDataSource.getRepository(User);
