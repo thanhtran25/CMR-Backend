@@ -102,6 +102,25 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
     }
 }
 
+export async function changeProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+        const schema = Joi.object({
+            fullname: Joi.string().max(255),
+            birthday: Joi.date(),
+            gender: Joi.string().default(Gender.MALE),
+            address: Joi.string().max(255).default(null),
+            numberPhone: Joi.string().min(10).max(11),
+        });
+
+        const value = validate<UpdateUserDTO>(req.body, schema);
+        const result = await userService.updateUser(req.user.id, value)
+        return res.status(200).send(result);
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
         await userService.deleteUser(parseInt(req.params.id))

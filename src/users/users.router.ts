@@ -9,7 +9,8 @@ import {
     changePosition,
     getLockedUsers,
     recoverUser,
-    getMe
+    getMe,
+    changeProfile
 } from './users.controller';
 import { authorization } from '../core/middleware/auth.middleware'
 import { Roles } from '../core/enum';
@@ -21,6 +22,7 @@ router.get('/me', authorization(), getMe);
 router.get('/locked', authorization(Roles.ADMIN), getLockedUsers);
 router.post('/', authorization(Roles.ADMIN, Roles.MANAGER), createUser);
 router.put('/me/password', authorization(), changePassword);
+router.put('/me', authorization(), changeProfile);
 
 router.get('/:id', authorization(Roles.ADMIN, Roles.MANAGER), getUser);
 router.put('/:id', authorization(Roles.ADMIN, Roles.MANAGER), updateUser);
