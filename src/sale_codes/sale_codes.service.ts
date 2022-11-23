@@ -32,10 +32,15 @@ export async function getSaleCode(id: number) {
 export async function createSaleCode(createSaleCodeDTO: CreateSaleCodeDTO) {
     const { productIds, ...saleCode } = createSaleCodeDTO
     const newSaleCode = new SaleCode(saleCode);
-
+    if (productIds) {
+        console.log(productIds);
+    }
     await AppDataSource.transaction(async (transactionalEntityManager) => {
         await transactionalEntityManager.save(newSaleCode);
-        await transactionalEntityManager.update(Product, productIds, { saleCodeId: newSaleCode.id })
+
+        if (productIds) {
+            await transactionalEntityManager.update(Product, productIds, { saleCodeId: newSaleCode.id })
+        }
     })
     return newSaleCode;
 }
