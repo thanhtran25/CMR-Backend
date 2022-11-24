@@ -191,23 +191,17 @@ function billInformation(bill: Bill) {
 }
 
 export async function getCoordinates(address: string) {
-    const data = new FormData();
-    data.append('locate', address);
-    data.append('geoit', 'JSON');
-    data.append('region', 'VN');
-    data.append('ok', 'Geocode');
+
+    address = encodeURI(address)
 
     const config = {
-        method: 'post',
-        url: 'https://geocode.xyz/',
-        headers: {
-            ...data.getHeaders()
-        },
-        data: data
+        method: 'get',
+        url: `https://us1.locationiq.com/v1/search?key=${process.env.API_KEY}&q=${address}&format=json`,
+        headers: {}
     };
 
-    const { longt, latt } = await (await axios(config)).data;
-    return { longt, latt };
+    const { lon, lat } = await (await axios(config)).data[0];
+    return { lon, lat };
 }
 
 export async function getShippingFee(address: string) {
@@ -219,11 +213,11 @@ export async function getShippingFee(address: string) {
     const coordinates = await Promise.all([getCoordinates(address), getCoordinates(inventories.address)]);
 
     const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(coordinates[0].latt - coordinates[1].latt);  // deg2rad below
-    const dLon = deg2rad(coordinates[0].longt - coordinates[1].longt);
+    const dLat = deg2rad(coordinates[0].lat - coordinates[1].lat);  // deg2rad below
+    const dLon = deg2rad(coordinates[0].lon - coordinates[1].lon);
     const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(coordinates[0].latt)) * Math.cos(deg2rad(coordinates[1].latt)) *
+        Math.cos(deg2rad(coordinates[0].lat)) * Math.cos(deg2rad(coordinates[1].lat)) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2)
         ;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
