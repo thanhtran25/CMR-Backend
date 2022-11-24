@@ -14,13 +14,13 @@ import { ANONYMOUS_USER } from '../core/constant';
 
 const router = express.Router();
 
-router.get('/', authorization(Roles.MANAGER, Roles.STAFF), getBills);
+router.get('/', authorization(Roles.MANAGER, Roles.STAFF, Roles.SHIPPER), getBills);
 router.post('/', authorization(ANONYMOUS_USER, Roles.CUSTOMER), createBill);
 router.post('/shipping', getShippingFee)
 router.get('/history', authorization(Roles.CUSTOMER), getHistory);
 
 router.put('/accept/:id', authorization(Roles.MANAGER, Roles.STAFF), acceptBill);
 router.put('/ship/:id', authorization(Roles.SHIPPER), shipping)
-router.get('/:id', authorization(Roles.MANAGER, Roles.STAFF, Roles.CUSTOMER), getBill);
+router.get('/:id', authorization(Roles.MANAGER, Roles.STAFF, Roles.CUSTOMER, Roles.SHIPPER), getBill);
 
 export default router;

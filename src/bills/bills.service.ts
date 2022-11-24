@@ -13,6 +13,7 @@ import { User } from '../users/users.entity';
 import { CreateBillDTO, UpdateBillDTO } from './bills.dto';
 import { Bill } from './bills.entity';
 import { Inventory } from '../inventories/inventories.entity';
+import { query } from 'express';
 
 
 const billRepo = AppDataSource.getRepository(Bill);
@@ -118,22 +119,22 @@ export async function acceptBill(id: number, updateBillDTO: any) {
 
 }
 
-export async function getHistory(userId: number, limit: number, page: number) {
-    const skip = limit * (page - 1);
-
+export async function getHistory(filters: FilterPagination) {
+    const { userId, ...filter } = filters
+    const { where, ...query } = buildPagination(Bill, filter);
     const [result, total] = await billRepo.findAndCount({
+        ...query,
         where: {
-            userId: userId,
+            ...where,
+            userId: userId
         },
-        skip: skip,
-        take: limit,
         relations: {
             billDetails: {
                 product: true
             }
         }
     });
-    return { totalPage: Math.ceil(total / limit), bills: result };
+    return { totalPage: Math.ceil(total / filters.limit), bills: result };
 }
 
 async function getProductInventory(states: string, bill: Bill) {

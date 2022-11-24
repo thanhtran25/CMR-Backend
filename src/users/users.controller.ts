@@ -71,6 +71,7 @@ export async function createUser(req: Request, res: Response, next: NextFunction
             address: Joi.string().max(255).default(null),
             numberPhone: Joi.string().min(10).max(11),
             role: Joi.string().default(Roles.CUSTOMER),
+            verify: Joi.boolean().default(true)
         });
 
         const value = validate<CreateUserDTO>(req.body, schema);

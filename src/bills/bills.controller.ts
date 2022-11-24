@@ -6,7 +6,6 @@ import { FilterPagination } from '../core/interfaces/filter.interface';
 import * as billService from './bills.service';
 import { CreateBillDTO, ShippingDTO, UpdateBillDTO } from './bills.dto';
 import { BillStatus, OrderStates } from '../core/enum';
-import { userSignin } from '../core/utils/user-signin.util';
 
 export async function getBills(req: Request, res: Response, next: NextFunction) {
     try {
@@ -15,6 +14,8 @@ export async function getBills(req: Request, res: Response, next: NextFunction) 
             limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
             sort: Joi.string().allow(''),
             sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
+            states: Joi.string().valid(...Object.values({ ...OrderStates })),
+            shipperId: Joi.number(),
             numberPhone: Joi.string().allow('')
         });
 
@@ -109,9 +110,11 @@ export async function getHistory(req: Request, res: Response, next: NextFunction
         const schema = Joi.object({
             page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
             limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
+            states: Joi.string().allow(''),
+            userId: Joi.number().required()
         });
-        const { page, limit } = validate<FilterPagination>(req.query, schema);
-        const result = await billService.getHistory(+req.user.id, limit, page);
+        const query: FilterPagination = validate<FilterPagination>({ userId: req.user.id, ...req.query }, schema);
+        const result = await billService.getHistory(query);
         return res.status(200).send(result);
 
     } catch (error) {
