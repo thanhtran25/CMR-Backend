@@ -14,7 +14,7 @@ export async function getBills(req: Request, res: Response, next: NextFunction) 
             limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
             sort: Joi.string().allow(''),
             sortBy: Joi.string().valid(...Object.values(['asc', 'desc'])).allow(''),
-            states: Joi.string().valid(...Object.values({ ...OrderStates })),
+            states: Joi.array().items(Joi.string().valid(...Object.values({ ...OrderStates }))),
             shipperId: Joi.number(),
             numberPhone: Joi.string().allow('')
         });
@@ -110,7 +110,7 @@ export async function getHistory(req: Request, res: Response, next: NextFunction
         const schema = Joi.object({
             page: Joi.number().default(PAGINATION.DEFAULT_PAGE_NUMBER).min(1),
             limit: Joi.number().default(PAGINATION.DEFAULT_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE),
-            states: Joi.string().allow(''),
+            states: Joi.array().items(Joi.string().valid(...Object.values({ ...OrderStates }))),
             userId: Joi.number().required()
         });
         const query: FilterPagination = validate<FilterPagination>({ userId: req.user.id, ...req.query }, schema);

@@ -1,4 +1,4 @@
-import { Like } from "typeorm";
+import { In, Like } from "typeorm";
 import { } from 'typeorm';
 import { AppDataSource } from "../database";
 
@@ -19,6 +19,10 @@ export function buildPagination(entity: any, { page, limit, sort, sortBy, ...fil
         }
         if (typeof value === 'string' && !enumProperties.includes(key)) {
             where[key] = Like(`%${value}%`)
+            return;
+        }
+        if (enumProperties.includes(key)) {
+            where[key] = In(value)
             return;
         }
         where[key] = value
