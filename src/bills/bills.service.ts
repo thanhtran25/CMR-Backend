@@ -89,7 +89,7 @@ export async function acceptBill(id: number, updateBillDTO: any) {
     }
 
     const currentStates = statesMessage[updateBillDTO.states];
-    const imageStates = `${process.env.URL_STATES_IMG}/${updateBillDTO.states}.png`
+    const imageStates = `${process.env.URL_STATES_IMG}/${image[updateBillDTO.states]}`
     const billInfo = billInformation(bill);
 
     await AppDataSource.transaction(async (transactionalEntityManager) => {
@@ -183,6 +183,13 @@ const statesMessage = {
     'cancel': 'Đơn hàng đã bị hủy'
 }
 
+const image = {
+    'accepted': 'https://iili.io/HFCSxe9.png',
+    'shipping': 'https://iili.io/HFCSff4.png',
+    'delivering': 'https://iili.io/HFCSo57.png',
+    'delivered': 'https://iili.io/HFCSBg2.png',
+    'cancel': 'https://iili.io/HFCSq0l.png'
+}
 function billInformation(bill: Bill) {
     return `Địa chỉ nhận hàng: 
     ${bill.customerName}, 
