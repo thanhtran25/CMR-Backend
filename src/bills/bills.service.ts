@@ -89,7 +89,7 @@ export async function acceptBill(id: number, updateBillDTO: any) {
     }
 
     const currentStates = statesMessage[updateBillDTO.states];
-    const imageStates = `http://localhost:1912/static/states/${updateBillDTO.states}.png`
+    const imageStates = `${process.env.URL_STATES_IMG}/${updateBillDTO.states}.png`
     const billInfo = billInformation(bill);
 
     await AppDataSource.transaction(async (transactionalEntityManager) => {
