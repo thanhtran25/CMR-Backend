@@ -8,8 +8,11 @@ dotenv.config();
 import * as express from "express";
 import * as morgan from 'morgan';
 import { NotFound } from 'http-errors';
+import * as swaggerUI from 'swagger-ui-express';
+
 import { AppDataSource } from "./core/database";
 import authRouter from "./auth/auth.router";
+import { docs } from "./docs/info";
 import userRouter from './users/users.router';
 import categoryRouter from './categories/categories.router';
 import brandRouter from './brands/brands.router';
@@ -21,6 +24,7 @@ import saleCodeRouter from './sale_codes/sale_codes.router';
 import billRouter from './bills/bills.router';
 import * as resUtil from './core/utils/res.util';
 import * as sendMailUtil from './core/utils/send-email.util';
+import { servers } from "./docs/server";
 
 async function bootstrap() {
 
@@ -40,6 +44,10 @@ async function bootstrap() {
 
     await AppDataSource.initialize();
     console.log('Connection has been established successfully.');
+
+    app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(docs, {
+        explorer: true
+    }));
 
     app.use('/auth', authRouter);
     app.use('/users', userRouter);
